@@ -5,6 +5,11 @@ from .agents.basic_agent import BasicAgent
 from .agents.smart_agent import SmartAgent
 from .agents.efficient_agent import EfficientAgent
 from .agents.collaborative_agent import CollaborativeAgent
+from .ontology import (
+    create_vacuum_ontology,
+    initialize_environment,
+    get_cell_at_position,
+)
 
 
 class Simulation:
@@ -15,9 +20,12 @@ class Simulation:
         num_agents: int,
         dirty_percentage: float,
         max_time: int,
-        agent_type: str = "mixed"
+        agent_type: str = "mixed",
     ):
+        # Create and initialize ontology
+        self.onto = create_vacuum_ontology()
         self.environment = Environment(width, height, dirty_percentage)
+        self.cells = initialize_environment(self.onto, width, height, dirty_percentage)
         self.agents = self._initialize_agents(num_agents, agent_type)
         self.max_time = max_time
         self.current_time = 0
@@ -26,30 +34,52 @@ class Simulation:
 
     def _initialize_agents(self, num_agents: int, agent_type: str) -> List[Agent]:
         agents = []
-        if agent_type == "mixed":
-            for i in range(num_agents):
-                # Distribute agents evenly: 1/4 Basic, 1/4 Smart, 1/4 Efficient, 1/4 Collaborative
-                if i % 4 == 0:
-                    agents.append(BasicAgent((0, 0)))
-                elif i % 4 == 1:
-                    agents.append(SmartAgent((0, 0)))
-                elif i % 4 == 2:
-                    agents.append(EfficientAgent((0, 0)))
-                else:
-                    agents.append(CollaborativeAgent((0, 0)))
-        elif agent_type == "collaborative":
-            # All agents are collaborative
-            for _ in range(num_agents):
-                agents.append(CollaborativeAgent((0, 0)))
-        else:
-            # Original distribution: 1/3 Basic, 1/3 Smart, 1/3 Efficient
-            for i in range(num_agents):
-                if i % 3 == 0:
-                    agents.append(BasicAgent((0, 0)))
-                elif i % 3 == 1:
-                    agents.append(SmartAgent((0, 0)))
-                else:
-                    agents.append(EfficientAgent((0, 0)))
+
+        for i in range(num_agents):
+            # Create ontology agent instance
+            if agent_type == "mixed":
+                agent_class = (
+                    self.onto.BasicAgent
+                    if i % 4 == 0
+                    else (
+                        self.onto.SmartAgent
+                        if i % 4 == 1
+                        else (
+                            self.onto.EfficientAgent
+                            if i % 4 == 2
+                            else self.onto.CollaborativeAgent
+                        )
+                    )
+                )
+            elif agent_type == "collaborative":
+                agent_class = self.onto.CollaborativeAgent
+            else:
+                agent_class = (
+                    self.onto.BasicAgent
+                    if i % 3 == 0
+                    else (
+                        self.onto.SmartAgent if i % 3 == 1 else self.onto.EfficientAgent
+                    )
+                )
+
+            onto_agent = agent_class(f"agent_{i}")
+
+            # Initialize agent position
+            initial_pos = (0, 0)  # You might want to randomize this
+            onto_agent.has_position = [get_cell_at_position(self.onto, *initial_pos)]
+
+            # Create corresponding Python agent
+            if isinstance(onto_agent, self.onto.BasicAgent):
+                agent = BasicAgent(initial_pos, onto_agent)
+            elif isinstance(onto_agent, self.onto.SmartAgent):
+                agent = SmartAgent(initial_pos, onto_agent)
+            elif isinstance(onto_agent, self.onto.EfficientAgent):
+                agent = EfficientAgent(initial_pos, onto_agent)
+            else:
+                agent = CollaborativeAgent(initial_pos, onto_agent)
+
+            agents.append(agent)
+
         return agents
 
     def run(self) -> Dict:
@@ -60,21 +90,40 @@ class Simulation:
                 perception = agent.see(self.environment)
                 action = agent.next(perception)
                 agent.action(action, self.environment)
+                agent.update_ontology()  # Update ontology after each action
+
             self.current_time += 1
 
-        return self._get_statistics()
+        # Calculate statistics
+        total_moves = sum(agent.moves_count for agent in self.agents)
+        total_cleaned = sum(agent.cells_cleaned for agent in self.agents)
+        remaining_dirty = self.environment.get_dirty_count()
+        cleaning_efficiency = (
+            (total_cleaned / total_moves * 100) if total_moves > 0 else 0
+        )
+
+        return {
+            "initial_dirty": self.initial_dirty,
+            "remaining_dirty": remaining_dirty,
+            "cleaned_cells": total_cleaned,
+            "total_moves": total_moves,
+            "time_steps": self.current_time,
+            "cleaning_efficiency": cleaning_efficiency,
+        }
 
     def _get_statistics(self) -> Dict:
         total_moves = sum(agent.moves_count for agent in self.agents)
-        cells_cleaned = sum(agent.cells_cleaned for agent in self.agents)
-        final_dirty = self.environment.get_dirty_count()
-        clean_percentage = (
-            (self.initial_dirty - final_dirty) / self.initial_dirty
-        ) * 100
+        total_cleaned = sum(agent.cells_cleaned for agent in self.agents)
+        remaining_dirty = self.environment.get_dirty_count()
+        cleaning_efficiency = (
+            (total_cleaned / total_moves * 100) if total_moves > 0 else 0
+        )
 
         return {
-            "time_taken": self.current_time,
-            "clean_percentage": clean_percentage,
+            "initial_dirty": self.initial_dirty,
+            "remaining_dirty": remaining_dirty,
+            "cleaned_cells": total_cleaned,
             "total_moves": total_moves,
-            "cells_cleaned": cells_cleaned,
+            "time_steps": self.current_time,
+            "cleaning_efficiency": cleaning_efficiency,
         }
