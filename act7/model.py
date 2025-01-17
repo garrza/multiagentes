@@ -1,6 +1,8 @@
 import agentpy as ap
 import numpy as np
 from communicativeAgent import CommunicativeAgent
+from richAgent import RichAgent
+from cheatingAgent import cheatingAgent
 
 
 class CommunicationModel(ap.Model):
