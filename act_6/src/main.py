@@ -1,4 +1,12 @@
-from .simulation import Simulation
+import sys
+import os
+
+# Add the src directory to the Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.simulation import Simulation
+from src.explore_ontology import explore_ontology
+from src.visualize_ontology import visualize_ontology
 from owlready2 import *
 
 
@@ -52,15 +60,26 @@ def run_ontology_simulation():
         )
         print(f"Cells visited: {len(agent.has_visited)}")
 
-    return simulation  # Return the simulation object
+    return simulation
 
 
 def main():
     try:
-        run_ontology_simulation()
+        # Run simulation
+        print("\n=== Running Simulation ===")
+        simulation = run_ontology_simulation()
+
+        # Run ontology exploration
+        print("\n=== Exploring Ontology ===")
+        explore_ontology()
+
+        # Generate visualization
+        print("\n=== Generating Visualization ===")
+        visualize_ontology()
+
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-        raise e  # This will help see the full error trace
+        raise e
 
 
 if __name__ == "__main__":

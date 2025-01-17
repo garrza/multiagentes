@@ -1,0 +1,1208 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xml:base="http://vacuum.cleaner.ontology/"
+         xmlns="http://vacuum.cleaner.ontology/">
+
+<owl:Ontology rdf:about="http://vacuum.cleaner.ontology"/>
+
+<owl:ObjectProperty rdf:about="has_position">
+  <rdfs:domain rdf:resource="Agent"/>
+  <rdfs:range rdf:resource="Cell"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="has_visited">
+  <rdfs:domain rdf:resource="Agent"/>
+  <rdfs:range rdf:resource="Cell"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="can_perform">
+  <rdfs:domain rdf:resource="Agent"/>
+  <rdfs:range rdf:resource="Action"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="is_adjacent_to">
+  <rdfs:domain rdf:resource="Cell"/>
+  <rdfs:range rdf:resource="Cell"/>
+</owl:ObjectProperty>
+
+<owl:DatatypeProperty rdf:about="has_moves_count">
+  <rdfs:domain rdf:resource="Agent"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="has_cells_cleaned">
+  <rdfs:domain rdf:resource="Agent"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="has_x_coordinate">
+  <rdfs:domain rdf:resource="Cell"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="has_y_coordinate">
+  <rdfs:domain rdf:resource="Cell"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+</owl:DatatypeProperty>
+
+<owl:Class rdf:about="Agent">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="Environment">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="Cell">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="Action">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="BasicAgent">
+  <rdfs:subClassOf rdf:resource="Agent"/>
+</owl:Class>
+
+<owl:Class rdf:about="SmartAgent">
+  <rdfs:subClassOf rdf:resource="Agent"/>
+</owl:Class>
+
+<owl:Class rdf:about="EfficientAgent">
+  <rdfs:subClassOf rdf:resource="Agent"/>
+</owl:Class>
+
+<owl:Class rdf:about="CollaborativeAgent">
+  <rdfs:subClassOf rdf:resource="Agent"/>
+</owl:Class>
+
+<owl:Class rdf:about="DirtyCell">
+  <rdfs:subClassOf rdf:resource="Cell"/>
+</owl:Class>
+
+<owl:Class rdf:about="CleanCell">
+  <rdfs:subClassOf rdf:resource="Cell"/>
+</owl:Class>
+
+<owl:Class rdf:about="CleanAction">
+  <rdfs:subClassOf rdf:resource="Action"/>
+</owl:Class>
+
+<owl:Class rdf:about="MoveAction">
+  <rdfs:subClassOf rdf:resource="Action"/>
+</owl:Class>
+
+<owl:Class rdf:about="VisitedCell">
+  <rdfs:subClassOf rdf:resource="Cell"/>
+  <owl:equivalentClass>
+    <owl:Class>
+      <owl:intersectionOf rdf:parseType="Collection">
+        <rdf:Description rdf:about="Cell"/>
+        <owl:Restriction>
+          <owl:onProperty rdf:resource="has_visited"/>
+          <owl:someValuesFrom rdf:resource="Agent"/>
+        </owl:Restriction>
+      </owl:intersectionOf>
+    </owl:Class>
+  </owl:equivalentClass>
+</owl:Class>
+
+<owl:Class rdf:about="UnvisitedCell">
+  <rdfs:subClassOf rdf:resource="Cell"/>
+  <owl:equivalentClass>
+    <owl:Class>
+      <owl:intersectionOf rdf:parseType="Collection">
+        <rdf:Description rdf:about="Cell"/>
+        <owl:Class>
+          <owl:complementOf>
+            <owl:Restriction>
+              <owl:onProperty rdf:resource="has_visited"/>
+              <owl:someValuesFrom rdf:resource="Agent"/>
+            </owl:Restriction>
+          </owl:complementOf>
+        </owl:Class>
+      </owl:intersectionOf>
+    </owl:Class>
+  </owl:equivalentClass>
+</owl:Class>
+
+<owl:NamedIndividual rdf:about="cell_0_0">
+  <is_adjacent_to rdf:resource="cell_1_0"/>
+  <is_adjacent_to rdf:resource="cell_0_1"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <rdf:type rdf:resource="CleanCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_0_1">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_1_1"/>
+  <is_adjacent_to rdf:resource="cell_0_0"/>
+  <is_adjacent_to rdf:resource="cell_0_2"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_0_2">
+  <is_adjacent_to rdf:resource="cell_1_2"/>
+  <is_adjacent_to rdf:resource="cell_0_1"/>
+  <is_adjacent_to rdf:resource="cell_0_3"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <rdf:type rdf:resource="CleanCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_0_3">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_1_3"/>
+  <is_adjacent_to rdf:resource="cell_0_2"/>
+  <is_adjacent_to rdf:resource="cell_0_4"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_0_4">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_1_4"/>
+  <is_adjacent_to rdf:resource="cell_0_3"/>
+  <is_adjacent_to rdf:resource="cell_0_5"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_0_5">
+  <is_adjacent_to rdf:resource="cell_1_5"/>
+  <is_adjacent_to rdf:resource="cell_0_4"/>
+  <is_adjacent_to rdf:resource="cell_0_6"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_0_6">
+  <is_adjacent_to rdf:resource="cell_1_6"/>
+  <is_adjacent_to rdf:resource="cell_0_5"/>
+  <is_adjacent_to rdf:resource="cell_0_7"/>
+  <rdf:type rdf:resource="CleanCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_0_7">
+  <is_adjacent_to rdf:resource="cell_1_7"/>
+  <is_adjacent_to rdf:resource="cell_0_6"/>
+  <is_adjacent_to rdf:resource="cell_0_8"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_0_8">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_1_8"/>
+  <is_adjacent_to rdf:resource="cell_0_7"/>
+  <is_adjacent_to rdf:resource="cell_0_9"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_0_9">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_1_9"/>
+  <is_adjacent_to rdf:resource="cell_0_8"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_1_0">
+  <is_adjacent_to rdf:resource="cell_0_0"/>
+  <is_adjacent_to rdf:resource="cell_2_0"/>
+  <is_adjacent_to rdf:resource="cell_1_1"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_1_1">
+  <is_adjacent_to rdf:resource="cell_0_1"/>
+  <is_adjacent_to rdf:resource="cell_2_1"/>
+  <is_adjacent_to rdf:resource="cell_1_0"/>
+  <is_adjacent_to rdf:resource="cell_1_2"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <rdf:type rdf:resource="CleanCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_1_2">
+  <is_adjacent_to rdf:resource="cell_0_2"/>
+  <is_adjacent_to rdf:resource="cell_2_2"/>
+  <is_adjacent_to rdf:resource="cell_1_1"/>
+  <is_adjacent_to rdf:resource="cell_1_3"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_1_3">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_0_3"/>
+  <is_adjacent_to rdf:resource="cell_2_3"/>
+  <is_adjacent_to rdf:resource="cell_1_2"/>
+  <is_adjacent_to rdf:resource="cell_1_4"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_1_4">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_0_4"/>
+  <is_adjacent_to rdf:resource="cell_2_4"/>
+  <is_adjacent_to rdf:resource="cell_1_3"/>
+  <is_adjacent_to rdf:resource="cell_1_5"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_1_5">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_0_5"/>
+  <is_adjacent_to rdf:resource="cell_2_5"/>
+  <is_adjacent_to rdf:resource="cell_1_4"/>
+  <is_adjacent_to rdf:resource="cell_1_6"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_1_6">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_0_6"/>
+  <is_adjacent_to rdf:resource="cell_2_6"/>
+  <is_adjacent_to rdf:resource="cell_1_5"/>
+  <is_adjacent_to rdf:resource="cell_1_7"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_1_7">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_0_7"/>
+  <is_adjacent_to rdf:resource="cell_2_7"/>
+  <is_adjacent_to rdf:resource="cell_1_6"/>
+  <is_adjacent_to rdf:resource="cell_1_8"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_1_8">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_0_8"/>
+  <is_adjacent_to rdf:resource="cell_2_8"/>
+  <is_adjacent_to rdf:resource="cell_1_7"/>
+  <is_adjacent_to rdf:resource="cell_1_9"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_1_9">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_0_9"/>
+  <is_adjacent_to rdf:resource="cell_2_9"/>
+  <is_adjacent_to rdf:resource="cell_1_8"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_2_0">
+  <is_adjacent_to rdf:resource="cell_1_0"/>
+  <is_adjacent_to rdf:resource="cell_3_0"/>
+  <is_adjacent_to rdf:resource="cell_2_1"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_2_1">
+  <is_adjacent_to rdf:resource="cell_1_1"/>
+  <is_adjacent_to rdf:resource="cell_3_1"/>
+  <is_adjacent_to rdf:resource="cell_2_0"/>
+  <is_adjacent_to rdf:resource="cell_2_2"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_2_2">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_1_2"/>
+  <is_adjacent_to rdf:resource="cell_3_2"/>
+  <is_adjacent_to rdf:resource="cell_2_1"/>
+  <is_adjacent_to rdf:resource="cell_2_3"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_2_3">
+  <is_adjacent_to rdf:resource="cell_1_3"/>
+  <is_adjacent_to rdf:resource="cell_3_3"/>
+  <is_adjacent_to rdf:resource="cell_2_2"/>
+  <is_adjacent_to rdf:resource="cell_2_4"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_2_4">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_1_4"/>
+  <is_adjacent_to rdf:resource="cell_3_4"/>
+  <is_adjacent_to rdf:resource="cell_2_3"/>
+  <is_adjacent_to rdf:resource="cell_2_5"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_2_5">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_1_5"/>
+  <is_adjacent_to rdf:resource="cell_3_5"/>
+  <is_adjacent_to rdf:resource="cell_2_4"/>
+  <is_adjacent_to rdf:resource="cell_2_6"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_2_6">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_1_6"/>
+  <is_adjacent_to rdf:resource="cell_3_6"/>
+  <is_adjacent_to rdf:resource="cell_2_5"/>
+  <is_adjacent_to rdf:resource="cell_2_7"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_2_7">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_1_7"/>
+  <is_adjacent_to rdf:resource="cell_3_7"/>
+  <is_adjacent_to rdf:resource="cell_2_6"/>
+  <is_adjacent_to rdf:resource="cell_2_8"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_2_8">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_1_8"/>
+  <is_adjacent_to rdf:resource="cell_3_8"/>
+  <is_adjacent_to rdf:resource="cell_2_7"/>
+  <is_adjacent_to rdf:resource="cell_2_9"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_2_9">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_1_9"/>
+  <is_adjacent_to rdf:resource="cell_3_9"/>
+  <is_adjacent_to rdf:resource="cell_2_8"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_3_0">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_2_0"/>
+  <is_adjacent_to rdf:resource="cell_4_0"/>
+  <is_adjacent_to rdf:resource="cell_3_1"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_3_1">
+  <is_adjacent_to rdf:resource="cell_2_1"/>
+  <is_adjacent_to rdf:resource="cell_4_1"/>
+  <is_adjacent_to rdf:resource="cell_3_0"/>
+  <is_adjacent_to rdf:resource="cell_3_2"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_3_2">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_2_2"/>
+  <is_adjacent_to rdf:resource="cell_4_2"/>
+  <is_adjacent_to rdf:resource="cell_3_1"/>
+  <is_adjacent_to rdf:resource="cell_3_3"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_3_3">
+  <is_adjacent_to rdf:resource="cell_2_3"/>
+  <is_adjacent_to rdf:resource="cell_4_3"/>
+  <is_adjacent_to rdf:resource="cell_3_2"/>
+  <is_adjacent_to rdf:resource="cell_3_4"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <rdf:type rdf:resource="CleanCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_3_4">
+  <is_adjacent_to rdf:resource="cell_2_4"/>
+  <is_adjacent_to rdf:resource="cell_4_4"/>
+  <is_adjacent_to rdf:resource="cell_3_3"/>
+  <is_adjacent_to rdf:resource="cell_3_5"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <rdf:type rdf:resource="CleanCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_3_5">
+  <is_adjacent_to rdf:resource="cell_2_5"/>
+  <is_adjacent_to rdf:resource="cell_4_5"/>
+  <is_adjacent_to rdf:resource="cell_3_4"/>
+  <is_adjacent_to rdf:resource="cell_3_6"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_3_6">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_2_6"/>
+  <is_adjacent_to rdf:resource="cell_4_6"/>
+  <is_adjacent_to rdf:resource="cell_3_5"/>
+  <is_adjacent_to rdf:resource="cell_3_7"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_3_7">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_2_7"/>
+  <is_adjacent_to rdf:resource="cell_4_7"/>
+  <is_adjacent_to rdf:resource="cell_3_6"/>
+  <is_adjacent_to rdf:resource="cell_3_8"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_3_8">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_2_8"/>
+  <is_adjacent_to rdf:resource="cell_4_8"/>
+  <is_adjacent_to rdf:resource="cell_3_7"/>
+  <is_adjacent_to rdf:resource="cell_3_9"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_3_9">
+  <is_adjacent_to rdf:resource="cell_2_9"/>
+  <is_adjacent_to rdf:resource="cell_4_9"/>
+  <is_adjacent_to rdf:resource="cell_3_8"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_4_0">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_3_0"/>
+  <is_adjacent_to rdf:resource="cell_5_0"/>
+  <is_adjacent_to rdf:resource="cell_4_1"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_4_1">
+  <is_adjacent_to rdf:resource="cell_3_1"/>
+  <is_adjacent_to rdf:resource="cell_5_1"/>
+  <is_adjacent_to rdf:resource="cell_4_0"/>
+  <is_adjacent_to rdf:resource="cell_4_2"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_4_2">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_3_2"/>
+  <is_adjacent_to rdf:resource="cell_5_2"/>
+  <is_adjacent_to rdf:resource="cell_4_1"/>
+  <is_adjacent_to rdf:resource="cell_4_3"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_4_3">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_3_3"/>
+  <is_adjacent_to rdf:resource="cell_5_3"/>
+  <is_adjacent_to rdf:resource="cell_4_2"/>
+  <is_adjacent_to rdf:resource="cell_4_4"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_4_4">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_3_4"/>
+  <is_adjacent_to rdf:resource="cell_5_4"/>
+  <is_adjacent_to rdf:resource="cell_4_3"/>
+  <is_adjacent_to rdf:resource="cell_4_5"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_4_5">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_3_5"/>
+  <is_adjacent_to rdf:resource="cell_5_5"/>
+  <is_adjacent_to rdf:resource="cell_4_4"/>
+  <is_adjacent_to rdf:resource="cell_4_6"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_4_6">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_3_6"/>
+  <is_adjacent_to rdf:resource="cell_5_6"/>
+  <is_adjacent_to rdf:resource="cell_4_5"/>
+  <is_adjacent_to rdf:resource="cell_4_7"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_4_7">
+  <is_adjacent_to rdf:resource="cell_3_7"/>
+  <is_adjacent_to rdf:resource="cell_5_7"/>
+  <is_adjacent_to rdf:resource="cell_4_6"/>
+  <is_adjacent_to rdf:resource="cell_4_8"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_4_8">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_3_8"/>
+  <is_adjacent_to rdf:resource="cell_5_8"/>
+  <is_adjacent_to rdf:resource="cell_4_7"/>
+  <is_adjacent_to rdf:resource="cell_4_9"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_4_9">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_3_9"/>
+  <is_adjacent_to rdf:resource="cell_5_9"/>
+  <is_adjacent_to rdf:resource="cell_4_8"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_5_0">
+  <is_adjacent_to rdf:resource="cell_4_0"/>
+  <is_adjacent_to rdf:resource="cell_6_0"/>
+  <is_adjacent_to rdf:resource="cell_5_1"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_5_1">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_4_1"/>
+  <is_adjacent_to rdf:resource="cell_6_1"/>
+  <is_adjacent_to rdf:resource="cell_5_0"/>
+  <is_adjacent_to rdf:resource="cell_5_2"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_5_2">
+  <is_adjacent_to rdf:resource="cell_4_2"/>
+  <is_adjacent_to rdf:resource="cell_6_2"/>
+  <is_adjacent_to rdf:resource="cell_5_1"/>
+  <is_adjacent_to rdf:resource="cell_5_3"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_5_3">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_4_3"/>
+  <is_adjacent_to rdf:resource="cell_6_3"/>
+  <is_adjacent_to rdf:resource="cell_5_2"/>
+  <is_adjacent_to rdf:resource="cell_5_4"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_5_4">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_4_4"/>
+  <is_adjacent_to rdf:resource="cell_6_4"/>
+  <is_adjacent_to rdf:resource="cell_5_3"/>
+  <is_adjacent_to rdf:resource="cell_5_5"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_5_5">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_4_5"/>
+  <is_adjacent_to rdf:resource="cell_6_5"/>
+  <is_adjacent_to rdf:resource="cell_5_4"/>
+  <is_adjacent_to rdf:resource="cell_5_6"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_5_6">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_4_6"/>
+  <is_adjacent_to rdf:resource="cell_6_6"/>
+  <is_adjacent_to rdf:resource="cell_5_5"/>
+  <is_adjacent_to rdf:resource="cell_5_7"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_5_7">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_4_7"/>
+  <is_adjacent_to rdf:resource="cell_6_7"/>
+  <is_adjacent_to rdf:resource="cell_5_6"/>
+  <is_adjacent_to rdf:resource="cell_5_8"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_5_8">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_4_8"/>
+  <is_adjacent_to rdf:resource="cell_6_8"/>
+  <is_adjacent_to rdf:resource="cell_5_7"/>
+  <is_adjacent_to rdf:resource="cell_5_9"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_5_9">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_4_9"/>
+  <is_adjacent_to rdf:resource="cell_6_9"/>
+  <is_adjacent_to rdf:resource="cell_5_8"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_6_0">
+  <is_adjacent_to rdf:resource="cell_5_0"/>
+  <is_adjacent_to rdf:resource="cell_7_0"/>
+  <is_adjacent_to rdf:resource="cell_6_1"/>
+  <rdf:type rdf:resource="CleanCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_6_1">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_5_1"/>
+  <is_adjacent_to rdf:resource="cell_7_1"/>
+  <is_adjacent_to rdf:resource="cell_6_0"/>
+  <is_adjacent_to rdf:resource="cell_6_2"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_6_2">
+  <is_adjacent_to rdf:resource="cell_5_2"/>
+  <is_adjacent_to rdf:resource="cell_7_2"/>
+  <is_adjacent_to rdf:resource="cell_6_1"/>
+  <is_adjacent_to rdf:resource="cell_6_3"/>
+  <rdf:type rdf:resource="CleanCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_6_3">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_5_3"/>
+  <is_adjacent_to rdf:resource="cell_7_3"/>
+  <is_adjacent_to rdf:resource="cell_6_2"/>
+  <is_adjacent_to rdf:resource="cell_6_4"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_6_4">
+  <is_adjacent_to rdf:resource="cell_5_4"/>
+  <is_adjacent_to rdf:resource="cell_7_4"/>
+  <is_adjacent_to rdf:resource="cell_6_3"/>
+  <is_adjacent_to rdf:resource="cell_6_5"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_6_5">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_5_5"/>
+  <is_adjacent_to rdf:resource="cell_7_5"/>
+  <is_adjacent_to rdf:resource="cell_6_4"/>
+  <is_adjacent_to rdf:resource="cell_6_6"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_6_6">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_5_6"/>
+  <is_adjacent_to rdf:resource="cell_7_6"/>
+  <is_adjacent_to rdf:resource="cell_6_5"/>
+  <is_adjacent_to rdf:resource="cell_6_7"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_6_7">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_5_7"/>
+  <is_adjacent_to rdf:resource="cell_7_7"/>
+  <is_adjacent_to rdf:resource="cell_6_6"/>
+  <is_adjacent_to rdf:resource="cell_6_8"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_6_8">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_5_8"/>
+  <is_adjacent_to rdf:resource="cell_7_8"/>
+  <is_adjacent_to rdf:resource="cell_6_7"/>
+  <is_adjacent_to rdf:resource="cell_6_9"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_6_9">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_5_9"/>
+  <is_adjacent_to rdf:resource="cell_7_9"/>
+  <is_adjacent_to rdf:resource="cell_6_8"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_7_0">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_6_0"/>
+  <is_adjacent_to rdf:resource="cell_8_0"/>
+  <is_adjacent_to rdf:resource="cell_7_1"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_7_1">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_6_1"/>
+  <is_adjacent_to rdf:resource="cell_8_1"/>
+  <is_adjacent_to rdf:resource="cell_7_0"/>
+  <is_adjacent_to rdf:resource="cell_7_2"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_7_2">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_6_2"/>
+  <is_adjacent_to rdf:resource="cell_8_2"/>
+  <is_adjacent_to rdf:resource="cell_7_1"/>
+  <is_adjacent_to rdf:resource="cell_7_3"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_7_3">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_6_3"/>
+  <is_adjacent_to rdf:resource="cell_8_3"/>
+  <is_adjacent_to rdf:resource="cell_7_2"/>
+  <is_adjacent_to rdf:resource="cell_7_4"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_7_4">
+  <is_adjacent_to rdf:resource="cell_6_4"/>
+  <is_adjacent_to rdf:resource="cell_8_4"/>
+  <is_adjacent_to rdf:resource="cell_7_3"/>
+  <is_adjacent_to rdf:resource="cell_7_5"/>
+  <rdf:type rdf:resource="CleanCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_7_5">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_6_5"/>
+  <is_adjacent_to rdf:resource="cell_8_5"/>
+  <is_adjacent_to rdf:resource="cell_7_4"/>
+  <is_adjacent_to rdf:resource="cell_7_6"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_7_6">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_6_6"/>
+  <is_adjacent_to rdf:resource="cell_8_6"/>
+  <is_adjacent_to rdf:resource="cell_7_5"/>
+  <is_adjacent_to rdf:resource="cell_7_7"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_7_7">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_6_7"/>
+  <is_adjacent_to rdf:resource="cell_8_7"/>
+  <is_adjacent_to rdf:resource="cell_7_6"/>
+  <is_adjacent_to rdf:resource="cell_7_8"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_7_8">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_6_8"/>
+  <is_adjacent_to rdf:resource="cell_8_8"/>
+  <is_adjacent_to rdf:resource="cell_7_7"/>
+  <is_adjacent_to rdf:resource="cell_7_9"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_7_9">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_6_9"/>
+  <is_adjacent_to rdf:resource="cell_8_9"/>
+  <is_adjacent_to rdf:resource="cell_7_8"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_8_0">
+  <is_adjacent_to rdf:resource="cell_7_0"/>
+  <is_adjacent_to rdf:resource="cell_9_0"/>
+  <is_adjacent_to rdf:resource="cell_8_1"/>
+  <rdf:type rdf:resource="CleanCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_8_1">
+  <is_adjacent_to rdf:resource="cell_7_1"/>
+  <is_adjacent_to rdf:resource="cell_9_1"/>
+  <is_adjacent_to rdf:resource="cell_8_0"/>
+  <is_adjacent_to rdf:resource="cell_8_2"/>
+  <rdf:type rdf:resource="CleanCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_8_2">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_7_2"/>
+  <is_adjacent_to rdf:resource="cell_9_2"/>
+  <is_adjacent_to rdf:resource="cell_8_1"/>
+  <is_adjacent_to rdf:resource="cell_8_3"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_8_3">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_7_3"/>
+  <is_adjacent_to rdf:resource="cell_9_3"/>
+  <is_adjacent_to rdf:resource="cell_8_2"/>
+  <is_adjacent_to rdf:resource="cell_8_4"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_8_4">
+  <is_adjacent_to rdf:resource="cell_7_4"/>
+  <is_adjacent_to rdf:resource="cell_9_4"/>
+  <is_adjacent_to rdf:resource="cell_8_3"/>
+  <is_adjacent_to rdf:resource="cell_8_5"/>
+  <rdf:type rdf:resource="CleanCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_8_5">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_7_5"/>
+  <is_adjacent_to rdf:resource="cell_9_5"/>
+  <is_adjacent_to rdf:resource="cell_8_4"/>
+  <is_adjacent_to rdf:resource="cell_8_6"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_8_6">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_7_6"/>
+  <is_adjacent_to rdf:resource="cell_9_6"/>
+  <is_adjacent_to rdf:resource="cell_8_5"/>
+  <is_adjacent_to rdf:resource="cell_8_7"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_8_7">
+  <is_adjacent_to rdf:resource="cell_7_7"/>
+  <is_adjacent_to rdf:resource="cell_9_7"/>
+  <is_adjacent_to rdf:resource="cell_8_6"/>
+  <is_adjacent_to rdf:resource="cell_8_8"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_8_8">
+  <is_adjacent_to rdf:resource="cell_7_8"/>
+  <is_adjacent_to rdf:resource="cell_9_8"/>
+  <is_adjacent_to rdf:resource="cell_8_7"/>
+  <is_adjacent_to rdf:resource="cell_8_9"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_8_9">
+  <is_adjacent_to rdf:resource="cell_7_9"/>
+  <is_adjacent_to rdf:resource="cell_9_9"/>
+  <is_adjacent_to rdf:resource="cell_8_8"/>
+  <rdf:type rdf:resource="CleanCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_9_0">
+  <is_adjacent_to rdf:resource="cell_8_0"/>
+  <is_adjacent_to rdf:resource="cell_9_1"/>
+  <rdf:type rdf:resource="CleanCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_9_1">
+  <is_adjacent_to rdf:resource="cell_8_1"/>
+  <is_adjacent_to rdf:resource="cell_9_0"/>
+  <is_adjacent_to rdf:resource="cell_9_2"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_9_2">
+  <is_adjacent_to rdf:resource="cell_8_2"/>
+  <is_adjacent_to rdf:resource="cell_9_1"/>
+  <is_adjacent_to rdf:resource="cell_9_3"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_9_3">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_8_3"/>
+  <is_adjacent_to rdf:resource="cell_9_2"/>
+  <is_adjacent_to rdf:resource="cell_9_4"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_9_4">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_8_4"/>
+  <is_adjacent_to rdf:resource="cell_9_3"/>
+  <is_adjacent_to rdf:resource="cell_9_5"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_9_5">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_8_5"/>
+  <is_adjacent_to rdf:resource="cell_9_4"/>
+  <is_adjacent_to rdf:resource="cell_9_6"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_9_6">
+  <rdf:type rdf:resource="CleanCell"/>
+  <is_adjacent_to rdf:resource="cell_8_6"/>
+  <is_adjacent_to rdf:resource="cell_9_5"/>
+  <is_adjacent_to rdf:resource="cell_9_7"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_9_7">
+  <is_adjacent_to rdf:resource="cell_8_7"/>
+  <is_adjacent_to rdf:resource="cell_9_6"/>
+  <is_adjacent_to rdf:resource="cell_9_8"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_9_8">
+  <is_adjacent_to rdf:resource="cell_8_8"/>
+  <is_adjacent_to rdf:resource="cell_9_7"/>
+  <is_adjacent_to rdf:resource="cell_9_9"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="cell_9_9">
+  <is_adjacent_to rdf:resource="cell_8_9"/>
+  <is_adjacent_to rdf:resource="cell_9_8"/>
+  <rdf:type rdf:resource="DirtyCell"/>
+  <has_x_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_x_coordinate>
+  <has_y_coordinate rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</has_y_coordinate>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="agent_0">
+  <rdf:type rdf:resource="BasicAgent"/>
+  <has_visited rdf:resource="cell_0_1"/>
+  <has_visited rdf:resource="cell_1_1"/>
+  <has_visited rdf:resource="cell_2_2"/>
+  <has_visited rdf:resource="cell_2_1"/>
+  <has_visited rdf:resource="cell_2_0"/>
+  <has_visited rdf:resource="cell_1_0"/>
+  <has_visited rdf:resource="cell_0_0"/>
+  <has_visited rdf:resource="cell_0_2"/>
+  <has_visited rdf:resource="cell_1_2"/>
+  <has_visited rdf:resource="cell_1_3"/>
+  <has_visited rdf:resource="cell_2_4"/>
+  <has_visited rdf:resource="cell_2_5"/>
+  <has_visited rdf:resource="cell_3_4"/>
+  <has_visited rdf:resource="cell_4_4"/>
+  <has_visited rdf:resource="cell_5_3"/>
+  <has_visited rdf:resource="cell_6_3"/>
+  <has_visited rdf:resource="cell_5_2"/>
+  <has_visited rdf:resource="cell_6_2"/>
+  <has_visited rdf:resource="cell_7_3"/>
+  <has_visited rdf:resource="cell_6_4"/>
+  <has_visited rdf:resource="cell_5_5"/>
+  <has_visited rdf:resource="cell_6_5"/>
+  <has_visited rdf:resource="cell_6_6"/>
+  <has_visited rdf:resource="cell_5_6"/>
+  <has_visited rdf:resource="cell_4_6"/>
+  <has_visited rdf:resource="cell_4_7"/>
+  <has_visited rdf:resource="cell_3_8"/>
+  <has_visited rdf:resource="cell_5_7"/>
+  <has_visited rdf:resource="cell_7_4"/>
+  <has_visited rdf:resource="cell_8_3"/>
+  <has_visited rdf:resource="cell_8_2"/>
+  <has_visited rdf:resource="cell_7_2"/>
+  <has_visited rdf:resource="cell_9_3"/>
+  <has_visited rdf:resource="cell_8_1"/>
+  <has_visited rdf:resource="cell_8_0"/>
+  <has_visited rdf:resource="cell_9_2"/>
+  <has_visited rdf:resource="cell_7_1"/>
+  <has_visited rdf:resource="cell_6_1"/>
+  <has_visited rdf:resource="cell_5_0"/>
+  <has_visited rdf:resource="cell_6_0"/>
+  <has_visited rdf:resource="cell_5_1"/>
+  <has_visited rdf:resource="cell_4_1"/>
+  <has_visited rdf:resource="cell_8_4"/>
+  <has_position rdf:resource="cell_7_4"/>
+  <has_cells_cleaned rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">11</has_cells_cleaned>
+  <has_moves_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">89</has_moves_count>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="agent_1">
+  <rdf:type rdf:resource="SmartAgent"/>
+  <has_visited rdf:resource="cell_0_1"/>
+  <has_visited rdf:resource="cell_0_2"/>
+  <has_visited rdf:resource="cell_0_3"/>
+  <has_visited rdf:resource="cell_0_4"/>
+  <has_visited rdf:resource="cell_0_5"/>
+  <has_visited rdf:resource="cell_0_6"/>
+  <has_visited rdf:resource="cell_0_7"/>
+  <has_visited rdf:resource="cell_0_8"/>
+  <has_visited rdf:resource="cell_0_9"/>
+  <has_visited rdf:resource="cell_1_9"/>
+  <has_visited rdf:resource="cell_2_9"/>
+  <has_visited rdf:resource="cell_3_9"/>
+  <has_visited rdf:resource="cell_4_9"/>
+  <has_visited rdf:resource="cell_5_9"/>
+  <has_visited rdf:resource="cell_6_9"/>
+  <has_visited rdf:resource="cell_7_9"/>
+  <has_visited rdf:resource="cell_8_9"/>
+  <has_visited rdf:resource="cell_9_9"/>
+  <has_visited rdf:resource="cell_9_8"/>
+  <has_visited rdf:resource="cell_9_7"/>
+  <has_visited rdf:resource="cell_9_6"/>
+  <has_visited rdf:resource="cell_9_5"/>
+  <has_visited rdf:resource="cell_9_4"/>
+  <has_visited rdf:resource="cell_9_3"/>
+  <has_visited rdf:resource="cell_9_2"/>
+  <has_visited rdf:resource="cell_9_1"/>
+  <has_visited rdf:resource="cell_9_0"/>
+  <has_visited rdf:resource="cell_8_0"/>
+  <has_visited rdf:resource="cell_7_0"/>
+  <has_visited rdf:resource="cell_6_0"/>
+  <has_visited rdf:resource="cell_5_0"/>
+  <has_visited rdf:resource="cell_4_0"/>
+  <has_visited rdf:resource="cell_3_0"/>
+  <has_visited rdf:resource="cell_2_0"/>
+  <has_visited rdf:resource="cell_1_0"/>
+  <has_visited rdf:resource="cell_0_0"/>
+  <has_position rdf:resource="cell_8_9"/>
+  <has_cells_cleaned rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">11</has_cells_cleaned>
+  <has_moves_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">89</has_moves_count>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="agent_2">
+  <rdf:type rdf:resource="EfficientAgent"/>
+  <has_position rdf:resource="cell_0_1"/>
+  <has_visited rdf:resource="cell_0_1"/>
+  <has_cells_cleaned rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_cells_cleaned>
+  <has_moves_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</has_moves_count>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="agent_3">
+  <rdf:type rdf:resource="CollaborativeAgent"/>
+  <has_position rdf:resource="cell_0_1"/>
+  <has_visited rdf:resource="cell_0_1"/>
+  <has_cells_cleaned rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</has_cells_cleaned>
+  <has_moves_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</has_moves_count>
+</owl:NamedIndividual>
+
+
+</rdf:RDF>

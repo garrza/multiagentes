@@ -95,12 +95,12 @@ def initialize_environment(onto, width: int, height: int, dirty_percentage: floa
     """Initialize the environment with cells in the ontology"""
     import random
 
-    # Create all cells
+    # Create all cells as clean initially
     cells = []
     for x in range(width):
         for y in range(height):
             cell_name = f"cell_{x}_{y}"
-            cell = onto.Cell(cell_name)
+            cell = onto.CleanCell(cell_name)  # Create as CleanCell by default
             cell.has_x_coordinate = [x]
             cell.has_y_coordinate = [y]
             cells.append(cell)
@@ -122,9 +122,11 @@ def initialize_environment(onto, width: int, height: int, dirty_percentage: floa
 
     # Make some cells dirty based on dirty_percentage
     num_dirty = int(len(cells) * dirty_percentage)
-    dirty_cells = random.sample(cells, num_dirty)
-    for cell in dirty_cells:
-        onto.DirtyCell(f"dirty_{cell.name}", is_adjacent_to=cell.is_adjacent_to)
+    cells_to_dirty = random.sample(cells, num_dirty)
+
+    for cell in cells_to_dirty:
+        # Change the cell type from CleanCell to DirtyCell
+        cell.is_a = [onto.DirtyCell]
 
     return cells
 

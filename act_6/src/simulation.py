@@ -1,15 +1,16 @@
 from typing import List, Dict
-from .environment import Environment
-from .agents.base import Agent
-from .agents.basic_agent import BasicAgent
-from .agents.smart_agent import SmartAgent
-from .agents.efficient_agent import EfficientAgent
-from .agents.collaborative_agent import CollaborativeAgent
-from .ontology import (
+from src.environment import Environment
+from src.agents.base import Agent
+from src.agents.basic_agent import BasicAgent
+from src.agents.smart_agent import SmartAgent
+from src.agents.efficient_agent import EfficientAgent
+from src.agents.collaborative_agent import CollaborativeAgent
+from src.ontology import (
     create_vacuum_ontology,
     initialize_environment,
     get_cell_at_position,
 )
+import random
 
 
 class Simulation:
