@@ -38,8 +38,8 @@ def main():
     run = True
 
     # Create traffic lights
-    traffic_light_horizontal = TrafficLight((WIDTH // 2) + 55, (HEIGHT // 2) + 85)
-    traffic_light_vertical = TrafficLight((WIDTH // 2) - 85, (HEIGHT // 2) - 55, rotation_angle=90)
+    traffic_light_horizontal = TrafficLight((WIDTH // 2) + 40, (HEIGHT // 2) + 70)
+    traffic_light_vertical = TrafficLight((WIDTH // 2) - 70, (HEIGHT // 2) - 40, rotation_angle=90)
 
     # Create horizontal vehicles
     vehicles_horizontal = []
