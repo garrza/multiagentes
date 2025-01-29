@@ -1,6 +1,9 @@
 import pygame
 from traffic_light import TrafficLight
 from vehicle import Vehicle
+from vehicle2 import Vehicle2
+from vehicle3 import Vehicle3
+from vehicle4 import Vehicle4
 import random
 
 # Initialize Pygame
@@ -40,16 +43,17 @@ def draw_lanes():
 
 def spawn_vehicle():
     """Randomly spawns vehicles at defined positions based on probability."""
+    vehicle_class = random.choice([Vehicle, Vehicle2, Vehicle3, Vehicle4])  # Randomly choose Vehicle or Vehicle2
+
     # Spawn horizontal vehicles from the left
     if random.random() < H_SPAWN_RATE:
-        new_vehicle = Vehicle(0, HEIGHT // 2 - 5, BLACK, 'horizontal', vehicles_horizontal)
+        new_vehicle = vehicle_class(0, HEIGHT // 2 - 5, 'horizontal', vehicles_horizontal)
         vehicles_horizontal.append(new_vehicle)
 
     # Spawn vertical vehicles from the bottom
     if random.random() < V_SPAWN_RATE:
-        new_vehicle = Vehicle(WIDTH // 2 - 10, HEIGHT, WHITE, 'vertical', vehicles_vertical)
+        new_vehicle = vehicle_class(WIDTH // 2 - 10, HEIGHT, 'vertical', vehicles_vertical)
         vehicles_vertical.append(new_vehicle)
-
 def main():
     run = True
 

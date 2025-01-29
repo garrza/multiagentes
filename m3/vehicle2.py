@@ -1,13 +1,13 @@
 import pygame
 import random
 
-class Vehicle:
+class Vehicle2:
     def __init__(self, x, y, direction='horizontal', vehicle_list=None):
         self.x = x
         self.y = y
         self.width = 20
         self.height = 10
-        self.color = (0, 0, 0) # black
+        self.color = (255, 255, 255) # white
         self.speed = 1
         self.max_speed = 1
         self.acceleration = 0.01
