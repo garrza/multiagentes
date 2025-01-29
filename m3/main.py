@@ -56,6 +56,10 @@ def main():
     # Create traffic lights
     traffic_light_vertical = TrafficLight((WIDTH // 2) + 40, (HEIGHT // 2) + 70)
     traffic_light_horizontal = TrafficLight((WIDTH // 2) - 70, (HEIGHT // 2) - 40, rotation_angle=90)
+    
+    # Connect traffic lights to each other
+    traffic_light_vertical.set_other_light(traffic_light_horizontal)
+    traffic_light_horizontal.set_other_light(traffic_light_vertical)
 
     while run:
         clock.tick(FPS)
@@ -70,9 +74,14 @@ def main():
 
         # Update and draw traffic lights
         traffic_light_horizontal.update()
-        traffic_light_horizontal.draw(screen)
-
         traffic_light_vertical.update()
+        
+        # Clean up vehicles that have left the screen
+        vehicles_horizontal[:] = [v for v in vehicles_horizontal if v.x < WIDTH]
+        vehicles_vertical[:] = [v for v in vehicles_vertical if v.y > 0]
+
+        # Draw traffic lights after cleaning up vehicles
+        traffic_light_horizontal.draw(screen)
         traffic_light_vertical.draw(screen)
 
         # Spawn new vehicles
