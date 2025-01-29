@@ -20,9 +20,13 @@ GRAY = (50, 50, 50)
 FPS = 60
 clock = pygame.time.Clock()
 
-# Number of vehicles
-h_vehicles = 5  # Horizontal vehicles
-v_vehicles = 2  # Vertical vehicles
+# Vehicle spawn probability (adjust these to control spawn rates)
+H_SPAWN_RATE = 0.01  # 1% chance per frame (~0.6 vehicles per second at 60 FPS)
+V_SPAWN_RATE = 0.01  # 1% chance per frame (~0.6 vehicles per second at 60 FPS)
+
+# Vehicle lists
+vehicles_horizontal = []
+vehicles_vertical = []
 
 def draw_lanes():
     """Draw two perpendicular lanes on the screen."""
@@ -34,22 +38,24 @@ def draw_lanes():
     # Vertical lane
     pygame.draw.rect(screen, GRAY, (WIDTH // 2 - lane_width // 2, 0, lane_width, HEIGHT))
 
+def spawn_vehicle():
+    """Randomly spawns vehicles at defined positions based on probability."""
+    # Spawn horizontal vehicles from the left
+    if random.random() < H_SPAWN_RATE:
+        new_vehicle = Vehicle(0, HEIGHT // 2 - 5, BLACK, 'horizontal', vehicles_horizontal)
+        vehicles_horizontal.append(new_vehicle)
+
+    # Spawn vertical vehicles from the bottom
+    if random.random() < V_SPAWN_RATE:
+        new_vehicle = Vehicle(WIDTH // 2 - 10, HEIGHT, WHITE, 'vertical', vehicles_vertical)
+        vehicles_vertical.append(new_vehicle)
+
 def main():
     run = True
 
     # Create traffic lights
-    traffic_light_horizontal = TrafficLight((WIDTH // 2) + 40, (HEIGHT // 2) + 70)
-    traffic_light_vertical = TrafficLight((WIDTH // 2) - 70, (HEIGHT // 2) - 40, rotation_angle=90)
-
-    # Create horizontal vehicles
-    vehicles_horizontal = []
-    for i in range(h_vehicles):
-        vehicles_horizontal.append(Vehicle(0, HEIGHT // 2 - 5, BLACK, direction='horizontal'))
-
-    # Create vertical vehicles
-    vehicles_vertical = []
-    for i in range(v_vehicles):
-        vehicles_vertical.append(Vehicle(WIDTH // 2 - 10, 700, WHITE, direction='vertical'))
+    traffic_light_vertical = TrafficLight((WIDTH // 2) + 40, (HEIGHT // 2) + 70)
+    traffic_light_horizontal = TrafficLight((WIDTH // 2) - 70, (HEIGHT // 2) - 40, rotation_angle=90)
 
     while run:
         clock.tick(FPS)
@@ -69,14 +75,17 @@ def main():
         traffic_light_vertical.update()
         traffic_light_vertical.draw(screen)
 
+        # Spawn new vehicles
+        spawn_vehicle()
+
         # Update and draw horizontal vehicles
         for vehicle in vehicles_horizontal:
-            vehicle.move(traffic_light_horizontal)
+            vehicle.update(traffic_light_horizontal)
             vehicle.draw(screen)
 
         # Update and draw vertical vehicles
         for vehicle in vehicles_vertical:
-            vehicle.move(traffic_light_vertical)
+            vehicle.update(traffic_light_vertical)
             vehicle.draw(screen)
 
         pygame.display.flip()

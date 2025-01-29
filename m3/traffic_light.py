@@ -16,18 +16,19 @@ class TrafficLight:
         self.y = y
         self.state = "RED"  # Initial state
         self.timer = 0
-        self.green_time = 50  # 5 seconds green
-        self.red_time = 50  # 5 seconds red
         self.rotation_angle = rotation_angle  # Rotation angle in degrees
+        self.waiting_car = False
 
     def update(self):
-        self.timer += 1
-        if self.state == "RED" and self.timer > self.red_time:
-            self.state = "GREEN"
-            self.timer = 0
-        elif self.state == "GREEN" and self.timer > self.green_time:
-            self.state = "RED"
-            self.timer = 0
+        if self.waiting_car:  # If a car requested green, start the timer
+            self.timer += 1
+            if self.timer > 60:  # Wait 1 second (60 frames)
+                self.state = "GREEN"
+                self.timer = 0
+                self.waiting_car = False  # Reset request
+                
+    def request_green(self):
+        self.waiting_car = True  # A car is waiting and requests a green light
 
     def draw(self, screen):
         # Create a temporary surface for the traffic light
