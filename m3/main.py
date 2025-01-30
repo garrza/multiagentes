@@ -1,109 +1,216 @@
 import pygame
-from traffic_light import TrafficLight
-from vehicle import Vehicle
-from vehicle2 import Vehicle2
-from vehicle3 import Vehicle3
-from vehicle4 import Vehicle4
 import random
+from traffic_light import TrafficLight
+from vehicle import RegularVehicle, FastVehicle, SlowVehicle, CompactVehicle
 
-# Initialize Pygame
-pygame.init()
 
-# Screen dimensions
-WIDTH, HEIGHT = 700, 700
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Traffic Simulation")
+class TrafficSimulation:
+    def __init__(self):
+        pygame.init()
 
-# Colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GRAY = (50, 50, 50)
+        # Display settings
+        self.WIDTH = 800
+        self.HEIGHT = 600
+        self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+        pygame.display.set_caption("Traffic Intersection Simulation")
 
-# FPS
-FPS = 60
-clock = pygame.time.Clock()
+        # Colors
+        self.ROAD_COLOR = (40, 40, 40)
+        self.GRASS_COLOR = (34, 139, 34)
+        self.MARKING_COLOR = (255, 255, 255)
 
-# Vehicle spawn probability (adjust these to control spawn rates)
-H_SPAWN_RATE = 0.007  # 1% chance per frame (~0.6 vehicles per second at 60 FPS)
-V_SPAWN_RATE = 0.007  # 1% chance per frame (~0.6 vehicles per second at 60 FPS)
+        self.ROAD_WIDTH = 80
+        self.INTERSECTION_X = self.WIDTH // 2
+        self.INTERSECTION_Y = self.HEIGHT // 2
 
-# Vehicle lists
-vehicles_horizontal = []
-vehicles_vertical = []
+        self.clock = pygame.time.Clock()
+        self.running = True
+        self.vehicles = []
+        self.spawn_timer = 0
+        self.SPAWN_RATE = 120
 
-def draw_lanes():
-    """Draw two perpendicular lanes on the screen."""
-    lane_width = 50
+        # Initialize traffic lights
+        self.setup_traffic_lights()
 
-    # Horizontal lane
-    pygame.draw.rect(screen, GRAY, (0, HEIGHT // 2 - lane_width // 2, WIDTH, lane_width))
+    def setup_traffic_lights(self):
+        # Position traffic lights at the corners of the intersection
+        self.lights = {
+            "horizontal": TrafficLight(
+                self.INTERSECTION_X
+                + self.ROAD_WIDTH // 2
+                + 10,  # Right of intersection
+                self.INTERSECTION_Y
+                - self.ROAD_WIDTH // 2
+                - 10,  # Top edge of horizontal road
+                0,
+            ),
+            "vertical": TrafficLight(
+                self.INTERSECTION_X
+                + self.ROAD_WIDTH // 2
+                + 10,  # Right of intersection
+                self.INTERSECTION_Y - self.ROAD_WIDTH // 2 - 10,  # Above intersection
+                90,
+            ),
+        }
 
-    # Vertical lane
-    pygame.draw.rect(screen, GRAY, (WIDTH // 2 - lane_width // 2, 0, lane_width, HEIGHT))
+        # Link traffic lights
+        self.lights["horizontal"].set_other_light(self.lights["vertical"])
+        self.lights["vertical"].set_other_light(self.lights["horizontal"])
 
-def spawn_vehicle():
-    """Randomly spawns vehicles at defined positions based on probability."""
-    vehicle_class = random.choice([Vehicle, Vehicle2, Vehicle3, Vehicle4])  # Randomly choose Vehicle or Vehicle2
+        # Set initial states
+        self.lights["horizontal"].state = "GREEN"
+        self.lights["vertical"].state = "RED"
 
-    # Spawn horizontal vehicles from the left
-    if random.random() < H_SPAWN_RATE:
-        new_vehicle = vehicle_class(0, HEIGHT // 2 - 5, 'horizontal', vehicles_horizontal)
-        vehicles_horizontal.append(new_vehicle)
+    def spawn_vehicle(self):
+        if self.spawn_timer <= 0:
 
-    # Spawn vertical vehicles from the bottom
-    if random.random() < V_SPAWN_RATE:
-        new_vehicle = vehicle_class(WIDTH // 2 - 10, HEIGHT, 'vertical', vehicles_vertical)
-        vehicles_vertical.append(new_vehicle)
-def main():
-    run = True
+            spawn_points = {
+                "horizontal": {"x": 0, "y": self.INTERSECTION_Y - self.ROAD_WIDTH // 4},
+                "vertical": {
+                    "x": self.INTERSECTION_X - self.ROAD_WIDTH // 4,
+                    "y": self.HEIGHT,
+                },
+            }
 
-    # Create traffic lights
-    traffic_light_vertical = TrafficLight((WIDTH // 2) + 40, (HEIGHT // 2) + 70)
-    traffic_light_horizontal = TrafficLight((WIDTH // 2) - 70, (HEIGHT // 2) - 40, rotation_angle=90)
-    
-    # Connect traffic lights to each other
-    traffic_light_vertical.set_other_light(traffic_light_horizontal)
-    traffic_light_horizontal.set_other_light(traffic_light_vertical)
-    
-    while run:
-        clock.tick(FPS)
-        screen.fill(BLACK)
+            # Choose direction and vehicle type
+            direction = random.choice(["horizontal", "vertical"])
+            vehicle_class = random.choice(
+                [RegularVehicle, FastVehicle, SlowVehicle, CompactVehicle]
+            )
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
+            # Create vehicle
+            new_vehicle = vehicle_class(
+                spawn_points[direction]["x"],
+                spawn_points[direction]["y"],
+                direction,
+                self.vehicles,
+                self.ROAD_WIDTH,
+            )
 
-        # Draw lanes
-        draw_lanes()
+            # Add vehicle if no collision
+            if not any(self.check_collision(new_vehicle, v) for v in self.vehicles):
+                self.vehicles.append(new_vehicle)
 
-        # Update and draw traffic lights
-        traffic_light_horizontal.update()
-        traffic_light_vertical.update()
-        
-        # Clean up vehicles that have left the screen
-        vehicles_horizontal[:] = [v for v in vehicles_horizontal if v.x < WIDTH]
-        vehicles_vertical[:] = [v for v in vehicles_vertical if v.y > 0]
+            self.spawn_timer = self.SPAWN_RATE + random.randint(-20, 20)
+        else:
+            self.spawn_timer -= 1
 
-        # Draw traffic lights after cleaning up vehicles
-        traffic_light_horizontal.draw(screen)
-        traffic_light_vertical.draw(screen)
+    def check_collision(self, v1, v2):
+        return (
+            abs(v1.x - v2.x) < max(v1.width, v2.width) + 10
+            and abs(v1.y - v2.y) < max(v1.height, v2.height) + 10
+        )
 
-        # Spawn new vehicles
-        spawn_vehicle()
+    def draw_roads(self):
+        # Fill background with grass
+        self.screen.fill(self.GRASS_COLOR)
 
-        # Update and draw horizontal vehicles
-        for vehicle in vehicles_horizontal:
-            vehicle.update(traffic_light_horizontal)
-            vehicle.draw(screen)
+        # Draw horizontal road
+        pygame.draw.rect(
+            self.screen,
+            self.ROAD_COLOR,
+            (
+                0,
+                self.INTERSECTION_Y - self.ROAD_WIDTH // 2,
+                self.WIDTH,
+                self.ROAD_WIDTH,
+            ),
+        )
 
-        # Update and draw vertical vehicles
-        for vehicle in vehicles_vertical:
-            vehicle.update(traffic_light_vertical)
-            vehicle.draw(screen)
-        
+        # Draw vertical road
+        pygame.draw.rect(
+            self.screen,
+            self.ROAD_COLOR,
+            (
+                self.INTERSECTION_X - self.ROAD_WIDTH // 2,
+                0,
+                self.ROAD_WIDTH,
+                self.HEIGHT,
+            ),
+        )
+
+        # Draw road markings
+        self.draw_road_markings()
+
+    def draw_road_markings(self):
+        # Parameters for dashed lines
+        dash_length = 30
+        gap_length = 20
+        line_width = 2
+
+        # Horizontal road center line
+        y = self.INTERSECTION_Y
+        for x in range(0, self.WIDTH, dash_length + gap_length):
+            if (
+                x > self.INTERSECTION_X + self.ROAD_WIDTH // 2
+                or x < self.INTERSECTION_X - self.ROAD_WIDTH // 2
+            ):
+                pygame.draw.rect(
+                    self.screen,
+                    self.MARKING_COLOR,
+                    (x, y - line_width // 2, dash_length, line_width),
+                )
+
+        # Vertical road center line
+        x = self.INTERSECTION_X
+        for y in range(0, self.HEIGHT, dash_length + gap_length):
+            if (
+                y > self.INTERSECTION_Y + self.ROAD_WIDTH // 2
+                or y < self.INTERSECTION_Y - self.ROAD_WIDTH // 2
+            ):
+                pygame.draw.rect(
+                    self.screen,
+                    self.MARKING_COLOR,
+                    (x - line_width // 2, y, line_width, dash_length),
+                )
+
+    def update(self):
+        # Update traffic lights
+        for light in self.lights.values():
+            light.update()
+
+        # Update vehicles
+        for vehicle in self.vehicles[:]:
+            if vehicle.direction == "horizontal":
+                vehicle.update(self.lights["horizontal"], self.INTERSECTION_X)
+                if vehicle.x > self.WIDTH:
+                    self.vehicles.remove(vehicle)
+            else:
+                vehicle.update(self.lights["vertical"], self.INTERSECTION_Y)
+                if vehicle.y < 0:
+                    self.vehicles.remove(vehicle)
+
+        self.spawn_vehicle()
+
+    def draw(self):
+        self.draw_roads()
+
+        # Draw vehicles
+        for vehicle in self.vehicles:
+            vehicle.draw(self.screen)
+
+        # Draw traffic lights
+        for light in self.lights.values():
+            light.draw(self.screen)
+
         pygame.display.flip()
 
-    pygame.quit()
+    def run(self):
+        while self.running:
+            # Event handling
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.running = False
+
+            self.update()
+            self.draw()
+            self.clock.tick(60)
+
 
 if __name__ == "__main__":
-    main()
+    sim = TrafficSimulation()
+    sim.run()
+    pygame.quit()
