@@ -1,7 +1,7 @@
 import pygame
 import random
 
-class Vehicle:
+class Vehicle: # Agente normal
     def __init__(self, x, y, direction='horizontal', vehicle_list=None):
         self.x = x
         self.y = y
@@ -29,25 +29,26 @@ class Vehicle:
             else:
                 self.speed = min(self.speed + self.acceleration, self.max_speed)  # Speed up normally
             
-            # Check if the car is in the intersection
             if self.is_in_intersection():
-                if self.speed == 0:
-                    pass
-                else:
-                    self.speed =- self.deceleration
+                self.state = 'waiting'  # The car can go if the light is green at the intersection
+                self.speed = max(0, self.speed - self.deceleration)  # Stop gradually
+            
+            # Continue moving towards the intersection if not in it
             else:
-                # Normal speed
                 if self.direction == 'horizontal':
                     self.x += self.speed
                 elif self.direction == 'vertical':
                     self.y -= self.speed
                     
-            #if distance_to_light <= self.stop_distance and not traffic_light.is_green():
-                # self.state = "waiting"
-                # traffic_light.request_green()
+        elif self.state == 'waiting':
+            self.request_green(traffic_light)
+            if traffic_light.is_green():
+                self.state = 'accepted'  # The car can go if the light is green at the intersection
+            else:
+                self.state = 'waiting'
         
         elif self.state == "accepted":
-            # Normal speed
+            # Continue moving at normal speed after acceptance
             if self.direction == 'horizontal':
                 self.x += self.speed
             elif self.direction == 'vertical':
@@ -80,6 +81,14 @@ class Vehicle:
         else:
             return (self.y + self.height <= intersection_y)
 
+    def request_green(self, traffic_light):
+        if traffic_light.other_light.state == 'loop' or traffic_light.other_light.state == 'pause':
+            return
+        elif traffic_light.state == 'pause':
+            return
+        else:
+            traffic_light.state = 'loop'
+            
     def draw(self, screen):
         if self.direction == 'vertical':
             vehicle_surface = pygame.Surface((self.width, self.height))

@@ -1,9 +1,9 @@
 import pygame
 from traffic_light import TrafficLight
 from vehicle import Vehicle
-#from vehicle2 import Vehicle2
-#from vehicle3 import Vehicle3
-#from vehicle4 import Vehicle4
+from vehicle2 import Vehicle2
+from vehicle3 import Vehicle3
+from vehicle4 import Vehicle4
 import random
 
 # Initialize Pygame
@@ -24,13 +24,12 @@ FPS = 60
 clock = pygame.time.Clock()
 
 # Vehicle spawn probability (adjust these to control spawn rates)
-H_SPAWN_RATE = 0.01  # 1% chance per frame (~0.6 vehicles per second at 60 FPS)
-V_SPAWN_RATE = 0.01  # 1% chance per frame (~0.6 vehicles per second at 60 FPS)
+H_SPAWN_RATE = 0.007  # 1% chance per frame (~0.6 vehicles per second at 60 FPS)
+V_SPAWN_RATE = 0.007  # 1% chance per frame (~0.6 vehicles per second at 60 FPS)
 
 # Vehicle lists
 vehicles_horizontal = []
 vehicles_vertical = []
-timer = 0
 
 def draw_lanes():
     """Draw two perpendicular lanes on the screen."""
@@ -44,7 +43,7 @@ def draw_lanes():
 
 def spawn_vehicle():
     """Randomly spawns vehicles at defined positions based on probability."""
-    vehicle_class = random.choice([Vehicle])  # Randomly choose Vehicle or Vehicle2
+    vehicle_class = random.choice([Vehicle, Vehicle2, Vehicle3, Vehicle4])  # Randomly choose Vehicle or Vehicle2
 
     # Spawn horizontal vehicles from the left
     if random.random() < H_SPAWN_RATE:
@@ -65,8 +64,6 @@ def main():
     # Connect traffic lights to each other
     traffic_light_vertical.set_other_light(traffic_light_horizontal)
     traffic_light_horizontal.set_other_light(traffic_light_vertical)
-
-    timer = 0 # Timer for controlling the traffic lights
     
     while run:
         clock.tick(FPS)
@@ -103,9 +100,6 @@ def main():
         for vehicle in vehicles_vertical:
             vehicle.update(traffic_light_vertical)
             vehicle.draw(screen)
-
-        #timer = timer + 1
-        # print(timer)
         
         pygame.display.flip()
 
