@@ -1,9 +1,7 @@
 # environment.py
-# environment.py
 from OpenGL.GL import *
-from OpenGL.GLU import gluNewQuadric, gluCylinder  # Agregado para que gluNewQuadric esté definido
+from OpenGL.GLU import gluNewQuadric, gluCylinder, gluDisk
 from OpenGL.GLUT import *
-
 
 class City:
     def __init__(self):
@@ -144,8 +142,79 @@ class City:
         for pos in tree_positions:
             self.draw_tree(*pos)
 
+    def draw_park_bushes(self):
+        """
+        Dibuja arbustos a lo largo del perímetro del parque usando un margen interno.
+        El parque se define en el área de:
+        (-70, 0, 30) a (70, 0, 130).
+        Con un margen de 5 unidades, los arbustos se colocarán en:
+        x de -65 a 65 y z de 35 a 125.
+        """
+        glColor3f(0.0, 0.6, 0.0)  # Color verde para los arbustos
+        bush_radius = 2.0      # Radio del arbusto (se mantiene el tamaño)
+        spacing = 15.0         # Espaciado entre arbustos
+        margin = 5.0           # Margen interno para reducir el perímetro
+
+        # Límites internos para la colocación de arbustos:
+        x_min = -50.0 + margin   # -65.0
+        x_max = 50.0 - margin    # 65.0
+        z_bottom = 30.0 + margin # 35.0
+        z_top = 130.0 - margin   # 125.0
+
+        # Borde inferior: z = z_bottom, x de x_min a x_max
+        x = x_min
+        while x <= x_max:
+            glPushMatrix()
+            glTranslatef(x, 1.0, z_bottom)
+            glutSolidSphere(bush_radius, 16, 16)
+            glPopMatrix()
+            x += spacing
+
+        # Borde superior: z = z_top, x de x_min a x_max
+        x = x_min
+        while x <= x_max:
+            glPushMatrix()
+            glTranslatef(x, 1.0, z_top)
+            glutSolidSphere(bush_radius, 16, 16)
+            glPopMatrix()
+            x += spacing
+
+        # Borde izquierdo: x = x_min, z de z_bottom a z_top (omitiendo esquinas duplicadas)
+        z = z_bottom + spacing
+        while z <= z_top - spacing:
+            glPushMatrix()
+            glTranslatef(x_min, 1.0, z)
+            glutSolidSphere(bush_radius, 16, 16)
+            glPopMatrix()
+            z += spacing
+
+        # Borde derecho: x = x_max, z de z_bottom a z_top
+        z = z_bottom + spacing
+        while z <= z_top - spacing:
+            glPushMatrix()
+            glTranslatef(x_max, 1.0, z)
+            glutSolidSphere(bush_radius, 16, 16)
+            glPopMatrix()
+            z += spacing
+
+
+    def draw_pool(self):
+        # Dibujar una alberca (piscina) usando un disco azul
+        glPushMatrix()
+        # Colocar la alberca en una posición adecuada, por ejemplo, en el centro del parque
+        glTranslatef(0, 0.001, 100)
+        glColor3f(0.0, 0.5, 1.0)  # Azul para el agua
+        quadric = gluNewQuadric()
+        gluDisk(quadric, 0.0, 15.0, 32, 1)
+        glPopMatrix()
+
     def draw(self):
         self.draw_roads()
         self.draw_sidewalks()
         self.draw_park()
         self.draw_buildings()
+        self.draw_park_bushes()  # Ahora los arbustos se colocan en el perímetro reducido
+        self.draw_pool()
+
+
+
