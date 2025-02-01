@@ -1,141 +1,76 @@
+# main.py
 import pygame
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 
-from objloader import OBJ
+from environment import City
+from objects.car import Car
+from objects.traffic_light import TrafficLight  # Asegúrate de que TrafficLight esté implementado
 
 WINDOW_WIDTH  = 800
 WINDOW_HEIGHT = 600
 
-car_obj = None
+# Variables globales para los elementos de la escena
+city = None
+car = None
+traffic_lights = []  # Lista para los semáforos
 
 def init():
-    pygame.init()  # para cargar texturas en objloader
-
-    # Fondo verde "pasto"
+    pygame.init()
     glClearColor(0.09, 0.6, 0.149, 1.0)
-
-    # Z-buffer para 3D
     glEnable(GL_DEPTH_TEST)
-
-    # --- Proyección en perspectiva ---
+    
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluPerspective(45.0, WINDOW_WIDTH / float(WINDOW_HEIGHT), 1.0, 1000.0)
-
-    # --- Cámara "como antes" ---
+    gluPerspective(45.0, WINDOW_WIDTH / float(WINDOW_HEIGHT), 1.0, 2000.0)
+    
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
-    # Por ejemplo, algo como (0,150,130) mirando al origen
     gluLookAt(
-        0.0, 150.0, 130.0,  # posición de la cámara
-        0.0,   0.0,   0.0,  # a dónde mira
-        0.0,   1.0,   0.0   # vector "arriba"
+        0.0, 200.0, 250.0,  # Posición de la cámara
+        0.0, 0.0, 0.0,      # A dónde mira
+        0.0, 1.0, 0.0       # Vector "arriba"
     )
-
-def draw_roads():
-    """
-    Dibuja la intersección en el plano XZ (y=0):
-     - una calle horizontal (x=-100..100, z=-20..20)
-     - dos verticales (x=-60..-20 y x=20..60)
-     - líneas blancas centrales
-    """
-    # Carretera gris
-    glColor3f(0.3, 0.3, 0.3)
-
-    # -- CALLE HORIZONTAL --
-    glBegin(GL_QUADS)
-    glVertex3f(-100.0, 0.0,  20.0)
-    glVertex3f( 100.0, 0.0,  20.0)
-    glVertex3f( 100.0, 0.0, -20.0)
-    glVertex3f(-100.0, 0.0, -20.0)
-    glEnd()
-
-    # -- VERTICAL IZQUIERDA --
-    glBegin(GL_QUADS)
-    glVertex3f(-60.0, 0.0,  100.0)
-    glVertex3f(-20.0, 0.0,  100.0)
-    glVertex3f(-20.0, 0.0, -100.0)
-    glVertex3f(-60.0, 0.0, -100.0)
-    glEnd()
-
-    # -- VERTICAL DERECHA --
-    glBegin(GL_QUADS)
-    glVertex3f( 20.0, 0.0,  100.0)
-    glVertex3f( 60.0, 0.0,  100.0)
-    glVertex3f( 60.0, 0.0, -100.0)
-    glVertex3f( 20.0, 0.0, -100.0)
-    glEnd()
-
-    # Líneas blancas
-    glColor3f(1.0, 1.0, 1.0)
-    glLineWidth(2.0)
-
-    # Línea central horizontal
-    glBegin(GL_LINES)
-    glVertex3f(-100.0, 0.01, 0.0)
-    glVertex3f( 100.0, 0.01, 0.0)
-    glEnd()
-
-    # Central vertical izq: x=-40
-    glBegin(GL_LINES)
-    glVertex3f(-40.0, 0.01,  100.0)
-    glVertex3f(-40.0, 0.01, -100.0)
-    glEnd()
-
-    # Central vertical der: x=40
-    glBegin(GL_LINES)
-    glVertex3f(40.0, 0.01,  100.0)
-    glVertex3f(40.0, 0.01, -100.0)
-    glEnd()
-
-def draw_car():
-    """Dibuja el coche con las llantas apuntando hacia "abajo" en la pantalla."""
-    if car_obj is None:
-        return
-
-    glPushMatrix()
-
-    # Por ejemplo, lo ponemos en z=30, y=0 (sobre la calle horizontal)
-    glTranslatef(-65.0, 15.0, 5.0)
-
-    # Ajustamos la rotación para que las llantas queden abajo en la imagen
-    # -90° en X "acuesta" el coche sobre el plano XZ
-    
-
-    glRotatef(-90.0, 1.0, 0.0, 0.0)
-    glRotatef(-90.0, 0.0, 0.0, 1.0)
-
-    # Escala
-    glScalef(2.0, 2.0, 2.0)
-
-    # Color gris claro
-    glColor3f(0.29, 0.341, 0.8)
-    car_obj.render()
-    glPopMatrix()
 
 def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    draw_roads()
-    draw_car()
-    glutSwapBuffers()  # Doble buffer
+    city.draw()       # Dibuja el entorno
+    car.draw()        # Dibuja el coche 
+    for tl in traffic_lights:
+        tl.draw()     # Dibuja cada semáforo
+    glutSwapBuffers()
 
 def main():
-    global car_obj
+    global city, car, house, traffic_lights
     glutInit()
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT)
     glutInitWindowPosition(100, 100)
-    glutCreateWindow(b"Interseccion 3D")
-
+    glutCreateWindow(b"Simulacion de Trafico - Ciudad Organizada")
+    
     init()
-
-    # Cargar tu .obj
-    car_obj = OBJ("untitled.obj", swapyz=True)
-    car_obj.generate()
-
+    
+    # Inicializa el entorno y los objetos
+    city = City()
+    car = Car("models/untitled.obj", swapyz=True)
+    
+    # Crear 4 semáforos y asignarles posiciones (por ejemplo, en cada esquina de la intersección)
+    # Ajusta los valores según la escala y la posición de tu ciudad.
+    positions = [
+        (95.0, 25.0),    # Semáforo en la esquina superior derecha
+        (-95.0, 30.0),   # Semáforo en la esquina superior izquierda
+        (40.0, -25.0),   # Semáforo en la esquina inferior derecha
+        (-40.0, -20.0)   # Semáforo en la esquina inferior izquierda
+    ]
+    
+    for pos in positions:
+        tl = TrafficLight()
+        tl.x, tl.z = pos  # Asigna la posición deseada
+        traffic_lights.append(tl)
+    
     glutDisplayFunc(display)
+    glutIdleFunc(display)
     glutMainLoop()
 
 if __name__ == "__main__":
