@@ -1,9 +1,11 @@
 # main.py
 import pygame
-from pygame.locals import *
+import time
+import random
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
+from model import TrafficModel
 from environment import City
 from objects.car import Car
 from objects.traffic_light import TrafficLight  # Asegúrate de que TrafficLight esté implementado
@@ -14,7 +16,13 @@ WINDOW_HEIGHT = 600
 # Variables globales para los elementos de la escena
 city = None
 car = None
+model = None
 traffic_lights = []  # Lista para los semáforos
+
+spawner_left = 0
+spawner_right = 0
+spawner_up = (0, 0, 0)
+spawner_down = (-60, 0, 140)
 
 def init():
     glClearColor(0.09, 0.6, 0.149, 1.0)
@@ -44,31 +52,33 @@ def init():
     glLightfv(GL_LIGHT0, GL_SPECULAR, [0.5, 0.5, 0.5, 1.0])
 
 def display():
+    """ Renderiza la escena """
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glLoadIdentity()
-    gluLookAt(
-        0.0, 200.0, 250.0,
-        0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0
-    )
+    city.draw()       # Dibuja el entorno
+    #car.draw()        # Dibuja el coche
+    model.draw()
     
-    # Dibujar elementos
-    city.draw()
-    car.draw()
     for tl in traffic_lights:
-        tl.draw()
-    
-    pygame.display.flip()
+        tl.draw()     # Dibuja cada semáforo
+        
+    glutSwapBuffers()
 
 def main():
-    global city, car, traffic_lights
+    global city, model, car, traffic_lights
+    count = 0
     
-    # Pygame initialization
+    # Inicializar de pygame y OpenGL
+    glutInit()
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
+    glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT)
+    glutInitWindowPosition(100, 100)
+    glutCreateWindow(b"Simulacion de Trafico - Ciudad Organizada")
+    
+    # Inicializar pygame
     pygame.init()
-    screen = pygame.display.set_mode(
-        (WINDOW_WIDTH, WINDOW_HEIGHT), 
-        pygame.DOUBLEBUF | pygame.OPENGL
-    )
+    
+    # Inicializar el entorno de OpenGL
+    init()
     
     # OpenGL initialization
     glClearColor(0.09, 0.6, 0.149, 1.0)
@@ -90,7 +100,8 @@ def main():
 
     # Game initialization
     city = City()
-    car = Car("models/untitled.obj", swapyz=True)
+    model = TrafficModel()
+    #car = Car("models/untitled.obj", swapyz=True)
     
     # Crear 4 semáforos y asignarles posiciones (por ejemplo, en cada esquina de la intersección)
     # Ajusta los valores según la escala y la posición de tu ciudad.
@@ -100,36 +111,34 @@ def main():
         (40.0, -25.0),   # Semáforo en la esquina inferior derecha
         (-40.0, -20.0)   # Semáforo en la esquina inferior izquierda
     ]
-    
+
     for pos in positions:
         tl = TrafficLight()
         tl.x, tl.z = pos  # Asigna la posición deseada
         traffic_lights.append(tl)
-    
-    # Main game loop
-    clock = pygame.time.Clock()
+        
     running = True
+    last_spawn_time = time.time()
+    
     while running:
+        start_time = time.time()
+
+        # Cerrar la ventana si el usuario presiona la tecla ESC o cierra la ventana
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
+        # Spawnear un carro cada 2-5 segundos
+        if time.time() - last_spawn_time >= (2 + random.random() * 3):
+            last_spawn_time = time.time()
+
+        # Actualizar simulación
+        model.step()
+        display()
         
-        # Update game state
-        # (Add your game logic here)
-        
-        # Render frame
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        glLoadIdentity()
-        gluLookAt(0.0, 200.0, 250.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
-        
-        # Draw game objects
-        city.draw()
-        car.draw()
-        for tl in traffic_lights:
-            tl.draw()
-        
-        pygame.display.flip()
-        clock.tick(60)
+        # Control de FPS (60 FPS)
+        elapsed_time = time.time() - start_time
+        time.sleep(max(1 / 60 - elapsed_time, 0))
 
     pygame.quit()
 

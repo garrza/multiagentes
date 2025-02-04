@@ -7,9 +7,10 @@ class Car:
         self.model = OBJ(model_path, swapyz=swapyz)
         self.model.generate()
         # Posición y otros parámetros iniciales
-        self.x = -65.0
-        self.y = 15.0
-        self.z = 5.0
+        self.x = -60
+        # self.y = 15.0
+        self.y = 0
+        self.z = 140
         self.rotation = 0.0  # Si deseas rotar el coche
         self.scale = 2.0
 
