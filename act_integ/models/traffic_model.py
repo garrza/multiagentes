@@ -16,12 +16,20 @@ class TrafficModel(ap.Model):
         self.vehicles = ap.AgentList(self, 0, VehicleAgent)
 
     def step(self):
+        print("Updating traffic model step")
+
         """Execute a single step in the simulation."""
         self.step_count += 1
 
         # Update traffic lights
         for light in self.traffic_lights:
+            print(
+                f"Updating traffic light at ({light.x}, {light.z}) is {light.current_state}"
+            )
             light.update()
+            print(
+                f"After: Traffic Light at ({light.x}, {light.z}) is {light.current_state}"
+            )
 
         # Spawn new vehicles periodically
         if self.step_count % random.randint(120, 300) == 0:

@@ -98,8 +98,8 @@ class TrafficSimulation:
 
         # Initialize simulation components
         self.city = City()
-        self.model = TrafficModel(traffic_lights=self.traffic_lights)
         self._create_traffic_lights()
+        self.model = TrafficModel(traffic_lights=self.traffic_lights)
 
         running = True
         last_spawn_time = time.time()

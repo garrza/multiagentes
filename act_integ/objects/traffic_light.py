@@ -49,6 +49,9 @@ class TrafficLight:
             self.current_state = LightState.RED
 
     def is_red(self):
+        print(
+            f"Traffic Light at ({self.x}, {self.z}) is RED: {self.current_state == 'RED'}"
+        )
         return (
             self.current_state == LightState.RED
             or self.current_state == LightState.YELLOW
