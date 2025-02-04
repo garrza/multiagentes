@@ -1,3 +1,4 @@
+# models/agents.py
 import os
 import random
 from typing import List, Tuple
@@ -10,87 +11,128 @@ from objects.objloader import OBJ
 
 
 class VehicleAgent(ap.Agent):
-    """An agent representing a vehicle in the traffic simulation."""
+    def setup(self):
+        """Initialize agent attributes during creation"""
+        self.vehicle = Vehicle.AUTO
+        self.speed = 0.5
+        self.position = [0.0, 0.0, 0.0]
+        self.direction = "N"  # N, S, E, W
+        self.lane = 0  # 0 for right lane, 1 for left lane
+        self.path = []
+        self.waiting_at_light = False
+        self.model = None
+        self.scale = 4.0
+        self.rotation = 0.0
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.vehicle: Vehicle = Vehicle.AUTO  # Use the class-level AUTO attribute
-        self.speed: float = 0.5
-        self.position: List[float] = [0.0, 0.0, 0.0]
-        self.path_id: int = 1
-        self.model: OBJ = None
-        self.scale: float = 4.0
-        
-        # Load model immediately during initialization
-        self._load_vehicle_model()
-        self._assign_spawn_point()
+        # Load the model and set initial position
+        self.load_vehicle_model()
+        self.assign_spawn_point()
+        self.calculate_path()
 
-    def _load_vehicle_model(self):
+    def load_vehicle_model(self):
         """Load 3D model for the vehicle."""
-        model_path = os.path.join(os.path.dirname(__file__), '..', 'assets', 'models', 'untitled.obj')
+        model_path = os.path.join(
+            os.path.dirname(__file__), "..", "assets", "models", "untitled.obj"
+        )
         self.model = OBJ(model_path, swapyz=True)
         self.model.generate()
 
-    def _assign_spawn_point(self):
-        """Assign a random spawn location and path for the vehicle."""
-        spawn_options: List[str] = ["left", "right", "top", "bottom"]
-        spawn_side: str = random.choice(spawn_options)
-
-        spawn_configs: dict = {
-            "left": ([-140, 0, 5], [2, 3]),
-            "right": ([140, 0, -10], [2, 3]),
-            "bottom": ([-57, 0, 135], [1]),
-            "top": ([63, 0, -135], [1])
+    def assign_spawn_point(self):
+        """Assign a random spawn location and initial direction."""
+        spawn_points = {
+            "N": {"pos": [-57, 0, -135], "rot": 0},
+            "S": {"pos": [63, 0, 135], "rot": 180},
+            "E": {"pos": [140, 0, -10], "rot": 270},
+            "W": {"pos": [-140, 0, 5], "rot": 90},
         }
 
-        self.position, path_choices = spawn_configs[spawn_side]
-        self.path_id = random.choice(path_choices)
+        self.direction = random.choice(list(spawn_points.keys()))
+        spawn_data = spawn_points[self.direction]
+        self.position = spawn_data["pos"]
+        self.rotation = spawn_data["rot"]
+        self.lane = random.choice([0, 1])
 
-    def move_along_path(self):
-        """Define vehicle trajectory based on assigned path."""
-        self.speed = min(
-            self.speed + self.vehicle.acceleration,
-            self.vehicle.max_speed
-        )
-
-        path_movements: dict = {
-            1: self._move_straight,
-            2: self._move_right,
-            3: self._move_left
-        }
-
-        path_movements[self.path_id]()
-
-    def _move_straight(self):
-        """Move vehicle straight forward."""
-        self.position[2] += self.speed
-
-    def _move_right(self):
-        """Move vehicle straight, then turn right."""
-        if self.position[2] < 100:
-            self.position[2] += self.speed
+    def calculate_path(self):
+        """Calculate waypoints based on spawn position and direction"""
+        if self.direction in ["N", "S"]:
+            self.calculate_vertical_path()
         else:
-            self.position[0] += self.speed
+            self.calculate_horizontal_path()
 
-    def _move_left(self):
-        """Move vehicle straight, then turn left."""
-        if self.position[2] < 100:
-            self.position[2] += self.speed
+    def calculate_vertical_path(self):
+        """Calculate path for north-south movement"""
+        current_z = self.position[2]
+        target_z = -current_z  # Opposite end of the road
+
+        self.path = []
+        if self.direction == "N":
+            self.path.append((self.position[0], 0, 30))  # Traffic light position
+            self.path.append((self.position[0], 0, target_z))
         else:
-            self.position[0] -= self.speed
+            self.path.append((self.position[0], 0, -30))  # Traffic light position
+            self.path.append((self.position[0], 0, target_z))
 
-    def step(self):
-        """Update vehicle state in each simulation step."""
-        self.move_along_path()
+    def calculate_horizontal_path(self):
+        """Calculate path for east-west movement"""
+        current_x = self.position[0]
+        target_x = -current_x  # Opposite end of the road
+
+        self.path = []
+        if self.direction == "E":
+            self.path.append((90, 0, self.position[2]))  # Traffic light position
+            self.path.append((target_x, 0, self.position[2]))
+        else:
+            self.path.append((-90, 0, self.position[2]))  # Traffic light position
+            self.path.append((target_x, 0, self.position[2]))
+
+    def check_traffic_light(self, traffic_lights):
+        """Check if vehicle should stop at nearby traffic light"""
+        for light in traffic_lights:
+            if self.direction in ["N", "S"] and light.controls_direction == "NS":
+                if abs(self.position[2] - light.z) < 10 and light.is_red():
+                    self.waiting_at_light = True
+                    return True
+            elif self.direction in ["E", "W"] and light.controls_direction == "EW":
+                if abs(self.position[0] - light.x) < 10 and light.is_red():
+                    self.waiting_at_light = True
+                    return True
+        self.waiting_at_light = False
+        return False
+
+    def move(self, traffic_lights):
+        """Move the vehicle along its path, respecting traffic lights"""
+        if self.waiting_at_light:
+            if not self.check_traffic_light(traffic_lights):
+                self.waiting_at_light = False
+            return
+
+        if not self.path:
+            return
+
+        target = self.path[0]
+        dx = target[0] - self.position[0]
+        dz = target[2] - self.position[2]
+
+        distance = (dx**2 + dz**2) ** 0.5
+
+        if distance < self.speed:
+            self.position = list(target)
+            self.path.pop(0)
+        else:
+            move_x = (dx / distance) * self.speed
+            move_z = (dz / distance) * self.speed
+            self.position[0] += move_x
+            self.position[2] += move_z
 
     def draw(self):
-        """Render vehicle in OpenGL scene."""
+        """Render the vehicle in the OpenGL scene"""
         if self.model is None:
-            return  # Skip drawing if no model is loaded
+            return
 
         glPushMatrix()
         glTranslatef(*self.position)
+        glRotatef(self.rotation, 0, 1, 0)
         glScalef(self.scale, self.scale, self.scale)
-        glRotatef(270, 1, 0, 0)  # Rotate vehicle
+        glRotatef(270, 1, 0, 0)
         self.model.render()
         glPopMatrix()

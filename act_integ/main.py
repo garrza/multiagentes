@@ -36,9 +36,15 @@ class TrafficSimulation:
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
         gluLookAt(
-            0.0, 200.0, 250.0,  # Camera position
-            0.0, 0.0, 0.0,       # Look at point
-            0.0, 1.0, 0.0        # Up vector
+            0.0,
+            200.0,
+            250.0,  # Camera position
+            0.0,
+            0.0,
+            0.0,  # Look at point
+            0.0,
+            1.0,
+            0.0,  # Up vector
         )
 
         # Lighting setup
@@ -53,17 +59,17 @@ class TrafficSimulation:
         glLightfv(GL_LIGHT0, GL_SPECULAR, [0.5, 0.5, 0.5, 1.0])
 
     def _create_traffic_lights(self):
-        """Create traffic lights at predefined positions"""
         positions = [
-            (95.0, 25.0),   # Top right corner
-            (-95.0, 30.0),  # Top left corner
-            (40.0, -25.0),  # Bottom right corner
-            (-40.0, -20.0)  # Bottom left corner
+            ((95.0, 25.0), "NS"),  # Top right corner
+            ((-95.0, 30.0), "NS"),  # Top left corner
+            ((40.0, -25.0), "EW"),  # Bottom right corner
+            ((-40.0, -20.0), "EW"),  # Bottom left corner
         ]
 
-        for pos in positions:
+        for pos, direction in positions:
             tl = TrafficLight()
             tl.x, tl.z = pos
+            tl.controls_direction = direction
             self.traffic_lights.append(tl)
 
     def display(self):
@@ -92,7 +98,7 @@ class TrafficSimulation:
 
         # Initialize simulation components
         self.city = City()
-        self.model = TrafficModel()
+        self.model = TrafficModel(traffic_lights=self.traffic_lights)
         self._create_traffic_lights()
 
         running = True
