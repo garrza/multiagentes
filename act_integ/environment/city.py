@@ -1,8 +1,8 @@
 # environment.py
+import random
 from OpenGL.GL import *
 from OpenGL.GLU import gluNewQuadric, gluCylinder, gluDisk
 from OpenGL.GLUT import *
-import random
 
 class City:
     def __init__(self):

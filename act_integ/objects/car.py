@@ -1,9 +1,12 @@
 # objects/car.py
 from OpenGL.GL import *
 from .objloader import OBJ
+import os
 
 class Car:
-    def __init__(self, model_path, swapyz=True):
+    def __init__(self, model_path=None, swapyz=True):
+        if model_path is None:
+            model_path = os.path.join(os.path.dirname(__file__), '..', 'assets', 'models', 'untitled.obj')
         self.model = OBJ(model_path, swapyz=swapyz)
         self.model.generate()
         # Posición y otros parámetros iniciales
