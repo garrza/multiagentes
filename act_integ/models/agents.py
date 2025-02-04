@@ -42,10 +42,10 @@ class VehicleAgent(ap.Agent):
     def assign_spawn_point(self):
         """Assign a random spawn location and initial direction."""
         spawn_points = {
-            "N": {"pos": [63, 0, 135], "rot": 180},
-            "S": {"pos": [-57, 0, -135], "rot": 0},
-            "E": {"pos": [-140, 0, 5], "rot": 90},
-            "W": {"pos": [140, 0, -10], "rot": 270},
+            "N": {"pos": [-57, 0, -135], "rot": 180},  # Facing South
+            "S": {"pos": [63, 0, 135], "rot": 0},      # Facing North
+            "E": {"pos": [140, 0, -10], "rot": 90},    # Facing East
+            "W": {"pos": [-140, 0, 5], "rot": 270},    # Facing West
         }
 
         self.direction = random.choice(list(spawn_points.keys()))
@@ -62,26 +62,29 @@ class VehicleAgent(ap.Agent):
             self.calculate_horizontal_path()
 
     def calculate_vertical_path(self):
-        """Reverse north-south movement"""
+        """Calculate path for north-south movement"""
         current_z = self.position[2]
-        target_z = -current_z  # Now opposite end
+        target_z = -current_z  # Opposite end of the road
 
         self.path = []
         if self.direction == "N":
-            self.path.append((self.position[0], 0, -target_z))  # Reversed
+            self.path.append((self.position[0], 0, 30))  # Traffic light position
+            self.path.append((self.position[0], 0, target_z))
         else:
-            self.path.append((self.position[0], 0, -target_z))  # Reversed
+            self.path.append((self.position[0], 0, -30))  # Traffic light position
+            self.path.append((self.position[0], 0, target_z))
 
     def calculate_horizontal_path(self):
-        """Reverse east-west movement"""
+        """Calculate path for east-west movement"""
         current_x = self.position[0]
-        target_x = -current_x  # Now opposite end
-
+        target_x = -current_x  # Opposite end of the road
         self.path = []
         if self.direction == "E":
-            self.path.append((target_x, 0, self.position[2]))  # Reversed
+            self.path.append((90, 0, self.position[2]))  # Traffic light position
+            self.path.append((target_x, 0, self.position[2]))
         else:
-            self.path.append((target_x, 0, self.position[2]))  # Reversed
+            self.path.append((-90, 0, self.position[2]))  # Traffic light position
+            self.path.append((target_x, 0, self.position[2]))
 
     def check_traffic_light(self, traffic_lights):
         """Check if vehicle should stop at its assigned traffic light"""
