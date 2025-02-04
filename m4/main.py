@@ -2,8 +2,10 @@
 import pygame
 import time
 import random
+from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
+from OpenGL.GLUT import *
 
 from model import TrafficModel
 from environment import City
@@ -54,6 +56,13 @@ def init():
 def display():
     """ Renderiza la escena """
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glLoadIdentity()
+    gluLookAt(
+        0.0, 200.0, 250.0,
+        0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0
+    )
+    
     city.draw()       # Dibuja el entorno
     #car.draw()        # Dibuja el coche
     model.draw()
@@ -61,50 +70,26 @@ def display():
     for tl in traffic_lights:
         tl.draw()     # Dibuja cada semáforo
         
-    glutSwapBuffers()
+    pygame.display.flip()
 
 def main():
     global city, model, car, traffic_lights
     count = 0
     
-    # Inicializar de pygame y OpenGL
-    glutInit()
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
-    glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT)
-    glutInitWindowPosition(100, 100)
-    glutCreateWindow(b"Simulacion de Trafico - Ciudad Organizada")
-    
-    # Inicializar pygame
+    # Inicializar pygame y configurar la ventana OpenGL
     pygame.init()
+    pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.DOUBLEBUF | pygame.OPENGL)
+    pygame.display.set_caption("Simulacion de Trafico - Ciudad Organizada")
     
     # Inicializar el entorno de OpenGL
     init()
     
-    # OpenGL initialization
-    glClearColor(0.09, 0.6, 0.149, 1.0)
-    glEnable(GL_DEPTH_TEST)
-    glMatrixMode(GL_PROJECTION)
-    gluPerspective(45.0, WINDOW_WIDTH/float(WINDOW_HEIGHT), 1.0, 2000.0)
-    glMatrixMode(GL_MODELVIEW)
-
-    # Lighting setup
-    glEnable(GL_LIGHTING)
-    glEnable(GL_LIGHT0)
-    glEnable(GL_COLOR_MATERIAL)
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE)
-    
-    glLightfv(GL_LIGHT0, GL_POSITION, [0.0, 300.0, 300.0, 1.0])
-    glLightfv(GL_LIGHT0, GL_AMBIENT, [0.2, 0.2, 0.2, 1.0])
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, [0.7, 0.7, 0.7, 1.0])
-    glLightfv(GL_LIGHT0, GL_SPECULAR, [0.5, 0.5, 0.5, 1.0])
-
     # Game initialization
     city = City()
     model = TrafficModel()
     #car = Car("models/untitled.obj", swapyz=True)
     
-    # Crear 4 semáforos y asignarles posiciones (por ejemplo, en cada esquina de la intersección)
-    # Ajusta los valores según la escala y la posición de tu ciudad.
+    # Crear 4 semáforos y asignarles posiciones
     positions = [
         (95.0, 25.0),    # Semáforo en la esquina superior derecha
         (-95.0, 30.0),   # Semáforo en la esquina superior izquierda
