@@ -9,7 +9,7 @@ class StopBlock:
         self.depth = depth
         self.direction = direction  # "NS" or "EW"
         self.active = True  # Synced with traffic light
-        self.visible = True  # For debugging, set to True to see the blocks
+        self.visible = False  # For debugging, set to True to see the blocks
 
     def update(self, light_state):
         """Sync with traffic light state"""

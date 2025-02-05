@@ -118,19 +118,27 @@ class VehicleAgent(ap.Agent):
         if self.crossing_intersection:
             return False
 
-        # If the vehicle is near the light and it's red, stop
-        distance_to_light = (
-            abs(self.position[0] - self.assigned_light.x)
-            if self.direction in ["E", "W"]
-            else abs(self.position[2] - self.assigned_light.z)
-        )
+        # Calculate distance to light based on direction
+        if self.direction in ["N", "S"]:
+            distance_to_light = abs(self.position[2] - self.assigned_light.z)
+        else:  # E, W
+            distance_to_light = abs(self.position[0] - self.assigned_light.x)
 
+        # Add debug logging
+        if distance_to_light < 5:
+            print(f"Vehicle at {self.position} direction {self.direction}")
+            print(f"Distance to light: {distance_to_light}")
+            print(f"Light state: {'red' if self.assigned_light.is_red() else 'green'}")
+
+        # Check if we should stop
         if distance_to_light < 5 and self.assigned_light.is_red():
             self.waiting_at_light = True
-            return True  # Stop before entering
+            return True
 
-        # Green light, proceed
-        self.waiting_at_light = False
+        # Explicitly clear waiting state when light is green
+        if self.waiting_at_light and not self.assigned_light.is_red():
+            self.waiting_at_light = False
+
         return False
 
     def is_collision_ahead(self, other_vehicles) -> bool:
