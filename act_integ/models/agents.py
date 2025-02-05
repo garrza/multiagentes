@@ -134,14 +134,26 @@ class VehicleAgent(ap.Agent):
         return False
 
     def is_collision_ahead(self, other_vehicles) -> bool:
-        """Check if there's a vehicle ahead in the same lane"""
+        """
+        Check if there's a vehicle ahead that would cause a collision.
+        Returns True if collision is detected, False otherwise.
+        """
         if not other_vehicles:
             return False
 
-        # Get vehicle's current lane and direction info
-        my_lane_pos = (
-            self.position[2] if self.direction in ["E", "W"] else self.position[0]
-        )
+        # Define collision detection parameters
+        collision_box = {
+            "length": self.length,  # Vehicle length
+            "width": 8.0,  # Vehicle width
+            "safe_distance": self.safe_distance,  # Safe following distance
+            "lane_tolerance": 5.0,  # Tolerance for lane position
+        }
+
+        # Get vehicle's current position and direction info
+        my_pos = self.position
+
+        # Calculate detection box based on direction
+        detection_box = self._get_detection_box(collision_box)
 
         for other in other_vehicles:
             if other is self:
@@ -151,43 +163,79 @@ class VehicleAgent(ap.Agent):
             if other.direction != self.direction:
                 continue
 
-            # Get other vehicle's lane position
-            other_lane_pos = (
-                other.position[2] if self.direction in ["E", "W"] else other.position[0]
-            )
-
-            # Check if vehicles are in the same lane (within tolerance)
-            lane_tolerance = 5.0
-            if abs(my_lane_pos - other_lane_pos) > lane_tolerance:
-                continue
-
-            # Check relative positions based on direction
-            if self.direction == "E":
-                if (
-                    other.position[0] > self.position[0]
-                    and other.position[0] - self.position[0] < self.safe_distance
-                ):
-                    return True
-            elif self.direction == "W":
-                if (
-                    other.position[0] < self.position[0]
-                    and self.position[0] - other.position[0] < self.safe_distance
-                ):
-                    return True
-            elif self.direction == "N":
-                if (
-                    other.position[2] > self.position[2]
-                    and other.position[2] - self.position[2] < self.safe_distance
-                ):
-                    return True
-            elif self.direction == "S":
-                if (
-                    other.position[2] < self.position[2]
-                    and self.position[2] - other.position[2] < self.safe_distance
-                ):
-                    return True
+            # Check if other vehicle is in detection box
+            if self._vehicle_in_detection_box(
+                other, detection_box, collision_box["lane_tolerance"]
+            ):
+                return True
 
         return False
+
+    def _get_detection_box(self, collision_params) -> dict:
+        """Calculate detection box coordinates based on vehicle direction"""
+        x, _, z = self.position
+        length = collision_params["length"]
+        safe_dist = collision_params["safe_distance"]
+        width = collision_params["width"]
+
+        if self.direction == "E":
+            return {
+                "x_min": x,
+                "x_max": x + safe_dist,
+                "z_min": z - width / 2,
+                "z_max": z + width / 2,
+            }
+        elif self.direction == "W":
+            return {
+                "x_min": x - safe_dist,
+                "x_max": x,
+                "z_min": z - width / 2,
+                "z_max": z + width / 2,
+            }
+        elif self.direction == "N":
+            return {
+                "x_min": x - width / 2,
+                "x_max": x + width / 2,
+                "z_min": z,
+                "z_max": z + safe_dist,
+            }
+        else:  # South
+            return {
+                "x_min": x - width / 2,
+                "x_max": x + width / 2,
+                "z_min": z - safe_dist,
+                "z_max": z,
+            }
+
+    def _vehicle_in_detection_box(
+        self, other_vehicle, detection_box, lane_tolerance
+    ) -> bool:
+        """Check if other vehicle is within the detection box"""
+        other_x, _, other_z = other_vehicle.position
+
+        # Basic box collision check
+        in_box = (
+            other_x >= detection_box["x_min"]
+            and other_x <= detection_box["x_max"]
+            and other_z >= detection_box["z_min"]
+            and other_z <= detection_box["z_max"]
+        )
+
+        if not in_box:
+            return False
+
+        # Additional lane check
+        if self.direction in ["E", "W"]:
+            return abs(other_z - self.position[2]) < lane_tolerance
+        else:  # N, S
+            return abs(other_x - self.position[0]) < lane_tolerance
+
+    def get_distance_to_vehicle(self, other_vehicle) -> float:
+        """Calculate distance to another vehicle"""
+        if self.direction in ["E", "W"]:
+            return abs(other_vehicle.position[0] - self.position[0])
+        else:  # N, S
+            return abs(other_vehicle.position[2] - self.position[2])
 
     def move(self, traffic_lights, should_stop=False):
         """Move the vehicle along its path, respecting traffic signals and other vehicles"""
