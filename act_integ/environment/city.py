@@ -58,7 +58,9 @@ class City:
         ]
 
     def draw_roads(self):
+        # Draw base road surfaces
         glColor3f(0.3, 0.3, 0.3)
+
         # Calle horizontal: x de -150 a 150, z entre -20 y 20
         glBegin(GL_QUADS)
         glVertex3f(-150.0, 0.0, 20.0)
@@ -83,21 +85,112 @@ class City:
         glVertex3f(50.0, 0.0, -150.0)
         glEnd()
 
-        # Líneas centrales en blanco
-        glColor3f(1.0, 1.0, 1.0)
+        # Draw road markings
+        glColor3f(1.0, 1.0, 1.0)  # White color for lines
         glLineWidth(2.0)
+
+        # Center lines for roads
         glBegin(GL_LINES)
+        # Horizontal road center line
         glVertex3f(-150.0, 0.01, 0.0)
         glVertex3f(150.0, 0.01, 0.0)
-        glEnd()
-        glBegin(GL_LINES)
+        # Left vertical road center line
         glVertex3f(-70.0, 0.01, 150.0)
         glVertex3f(-70.0, 0.01, -150.0)
-        glEnd()
-        glBegin(GL_LINES)
+        # Right vertical road center line
         glVertex3f(70.0, 0.01, 150.0)
         glVertex3f(70.0, 0.01, -150.0)
         glEnd()
+
+        # Draw intersection markings
+        def draw_intersection_lines(x_start, x_end, z_start, z_end, segments=6):
+            segment_length = (x_end - x_start) / segments
+            for i in range(segments + 1):
+                x = x_start + segment_length * i
+                glBegin(GL_LINES)
+                glVertex3f(x, 0.15, z_start)  # Raised above sidewalk
+                glVertex3f(x, 0.15, z_end)  # Raised above sidewalk
+                glEnd()
+
+        def draw_vertical_intersection_lines(
+            x_start, x_end, z_start, z_end, segments=6
+        ):
+            segment_length = (z_end - z_start) / segments
+            for i in range(segments + 1):
+                z = z_start + segment_length * i
+                glBegin(GL_LINES)
+                glVertex3f(x_start, 0.15, z)  # Raised above sidewalk
+                glVertex3f(x_end, 0.15, z)  # Raised above sidewalk
+                glEnd()
+
+        # Draw crosswalk background rectangles in light gray
+        glColor3f(0.85, 0.85, 0.85)  # Light gray for crosswalk background
+
+        def draw_crosswalk_background(x1, x2, z1, z2):
+            glBegin(GL_QUADS)
+            glVertex3f(x1, 0.12, z1)
+            glVertex3f(x2, 0.12, z1)
+            glVertex3f(x2, 0.12, z2)
+            glVertex3f(x1, 0.12, z2)
+            glEnd()
+
+        # Draw crosswalk backgrounds
+        # Left intersection
+        draw_crosswalk_background(-90, -50, 20, 25)  # North
+        draw_crosswalk_background(-90, -50, -25, -20)  # South
+        draw_crosswalk_background(-90, -85, -20, 20)  # West
+        draw_crosswalk_background(-55, -50, -20, 20)  # East
+
+        # Right intersection
+        draw_crosswalk_background(50, 90, 20, 25)  # North
+        draw_crosswalk_background(50, 90, -25, -20)  # South
+        draw_crosswalk_background(50, 55, -20, 20)  # West
+        draw_crosswalk_background(85, 90, -20, 20)  # East
+
+        # Draw crosswalk lines in white
+        glColor3f(1.0, 1.0, 1.0)  # White for crosswalk lines
+
+        # Left intersection horizontal lines
+        draw_intersection_lines(-90, -50, 20, 25)  # North side
+        draw_intersection_lines(-90, -50, -25, -20)  # South side
+
+        # Right intersection horizontal lines
+        draw_intersection_lines(50, 90, 20, 25)  # North side
+        draw_intersection_lines(50, 90, -25, -20)  # South side
+
+        # Left intersection vertical lines
+        draw_vertical_intersection_lines(-90, -85, -20, 20)  # West side
+        draw_vertical_intersection_lines(-55, -50, -20, 20)  # East side
+
+        # Right intersection vertical lines
+        draw_vertical_intersection_lines(50, 55, -20, 20)  # West side
+        draw_vertical_intersection_lines(85, 90, -20, 20)  # East side
+
+        # Draw stop lines at intersections
+        glLineWidth(4.0)  # Thicker lines for stop lines
+        glBegin(GL_LINES)
+        # Left intersection stop lines
+        glVertex3f(-90, 0.15, 20)
+        glVertex3f(-50, 0.15, 20)
+        glVertex3f(-90, 0.15, -20)
+        glVertex3f(-50, 0.15, -20)
+        glVertex3f(-90, 0.15, 20)
+        glVertex3f(-90, 0.15, -20)
+        glVertex3f(-50, 0.15, 20)
+        glVertex3f(-50, 0.15, -20)
+
+        # Right intersection stop lines
+        glVertex3f(50, 0.15, 20)
+        glVertex3f(90, 0.15, 20)
+        glVertex3f(50, 0.15, -20)
+        glVertex3f(90, 0.15, -20)
+        glVertex3f(50, 0.15, 20)
+        glVertex3f(50, 0.15, -20)
+        glVertex3f(90, 0.15, 20)
+        glVertex3f(90, 0.15, -20)
+        glEnd()
+
+        glLineWidth(2.0)  # Reset line width
 
     def draw_sidewalks(self):
         """Draw sidewalks along all roads"""

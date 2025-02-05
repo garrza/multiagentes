@@ -1,1 +1,1 @@
-# Environment package
+"""Environment package containing city and world elements."""

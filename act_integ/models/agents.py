@@ -139,9 +139,7 @@ class VehicleAgent(ap.Agent):
             return False
 
         # Get vehicle's current lane and direction info
-        my_lane_pos = (
-            self.position[0] if self.direction in ["N", "S"] else self.position[2]
-        )
+        my_lane_pos = self.position[2] if self.direction in ["E", "W"] else self.position[0]
 
         for other in other_vehicles:
             if other is self:
@@ -152,9 +150,7 @@ class VehicleAgent(ap.Agent):
                 continue
 
             # Get other vehicle's lane position
-            other_lane_pos = (
-                other.position[0] if self.direction in ["N", "S"] else other.position[2]
-            )
+            other_lane_pos = other.position[2] if self.direction in ["E", "W"] else other.position[0]
 
             # Check if vehicles are in the same lane (within tolerance)
             lane_tolerance = 5.0
@@ -162,29 +158,21 @@ class VehicleAgent(ap.Agent):
                 continue
 
             # Check relative positions based on direction
-            if self.direction == "N":
-                if (
-                    other.position[2] > self.position[2]
-                    and other.position[2] - self.position[2] < self.safe_distance
-                ):
-                    return True
-            elif self.direction == "S":
-                if (
-                    other.position[2] < self.position[2]
-                    and self.position[2] - other.position[2] < self.safe_distance
-                ):
-                    return True
-            elif self.direction == "E":
-                if (
-                    other.position[0] > self.position[0]
-                    and other.position[0] - self.position[0] < self.safe_distance
-                ):
+            if self.direction == "E":
+                if (other.position[0] > self.position[0] and 
+                    other.position[0] - self.position[0] < self.safe_distance):
                     return True
             elif self.direction == "W":
-                if (
-                    other.position[0] < self.position[0]
-                    and self.position[0] - other.position[0] < self.safe_distance
-                ):
+                if (other.position[0] < self.position[0] and 
+                    self.position[0] - other.position[0] < self.safe_distance):
+                    return True
+            elif self.direction == "N":
+                if (other.position[2] > self.position[2] and 
+                    other.position[2] - self.position[2] < self.safe_distance):
+                    return True
+            elif self.direction == "S":
+                if (other.position[2] < self.position[2] and 
+                    self.position[2] - other.position[2] < self.safe_distance):
                     return True
 
         return False
