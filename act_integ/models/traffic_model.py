@@ -138,7 +138,6 @@ class TrafficModel(ap.Model):
 
         # Update stop blocks based on corresponding traffic lights
         for block in self.stop_blocks:
-            # Find corresponding traffic light
             for light in self.traffic_lights:
                 if light.controls_direction == block.direction:
                     block.update(light)
@@ -149,14 +148,20 @@ class TrafficModel(ap.Model):
             new_vehicle = VehicleAgent(self)
             self.vehicles.append(new_vehicle)
 
-        # Update all vehicles
+        # Check for vehicle collisions and update positions
         for vehicle in self.vehicles:
+            # Check for collisions with other vehicles
+            vehicle.collision_ahead = vehicle.is_collision_ahead(self.vehicles)
+
             # Check for stop block collisions
             should_stop = False
             for block in self.stop_blocks:
                 if block.active and block.is_colliding(vehicle.position):
                     should_stop = True
                     break
+
+            # Stop if there's either a collision ahead or an active stop block
+            should_stop = should_stop or vehicle.collision_ahead
             vehicle.move(self.traffic_lights, should_stop)
 
         # Remove vehicles that have reached their destination

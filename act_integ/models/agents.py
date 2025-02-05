@@ -25,6 +25,8 @@ class VehicleAgent(ap.Agent):
         self.scale = 4.0
         self.rotation = 0.0
         self.assigned_light = None  # Track specific traffic light
+        self.length = 15.0  # Vehicle length for collision detection
+        self.safe_distance = 30.0  # Minimum safe distance between vehicles
 
         # Load vehicle model
         self.load_vehicle_model()
@@ -43,9 +45,9 @@ class VehicleAgent(ap.Agent):
         """Assign a random spawn location and initial direction."""
         spawn_points = {
             "N": {"pos": [-57, 0, -135], "rot": 180},  # Facing South
-            "S": {"pos": [63, 0, 135], "rot": 0},      # Facing North
-            "E": {"pos": [140, 0, -10], "rot": 90},    # Facing East
-            "W": {"pos": [-140, 0, 5], "rot": 270},    # Facing West
+            "S": {"pos": [63, 0, 135], "rot": 0},  # Facing North
+            "E": {"pos": [140, 0, -10], "rot": 90},  # Facing East
+            "W": {"pos": [-140, 0, 5], "rot": 270},  # Facing West
         }
 
         self.direction = random.choice(list(spawn_points.keys()))
@@ -131,29 +133,89 @@ class VehicleAgent(ap.Agent):
         self.waiting_at_light = False
         return False
 
+    def is_collision_ahead(self, other_vehicles) -> bool:
+        """Check if there's a vehicle ahead in the same lane"""
+        if not other_vehicles:
+            return False
+
+        # Get vehicle's current lane and direction info
+        my_lane_pos = (
+            self.position[0] if self.direction in ["N", "S"] else self.position[2]
+        )
+
+        for other in other_vehicles:
+            if other is self:
+                continue
+
+            # Skip vehicles not in same direction
+            if other.direction != self.direction:
+                continue
+
+            # Get other vehicle's lane position
+            other_lane_pos = (
+                other.position[0] if self.direction in ["N", "S"] else other.position[2]
+            )
+
+            # Check if vehicles are in the same lane (within tolerance)
+            lane_tolerance = 5.0
+            if abs(my_lane_pos - other_lane_pos) > lane_tolerance:
+                continue
+
+            # Check relative positions based on direction
+            if self.direction == "N":
+                if (
+                    other.position[2] > self.position[2]
+                    and other.position[2] - self.position[2] < self.safe_distance
+                ):
+                    return True
+            elif self.direction == "S":
+                if (
+                    other.position[2] < self.position[2]
+                    and self.position[2] - other.position[2] < self.safe_distance
+                ):
+                    return True
+            elif self.direction == "E":
+                if (
+                    other.position[0] > self.position[0]
+                    and other.position[0] - self.position[0] < self.safe_distance
+                ):
+                    return True
+            elif self.direction == "W":
+                if (
+                    other.position[0] < self.position[0]
+                    and self.position[0] - other.position[0] < self.safe_distance
+                ):
+                    return True
+
+        return False
+
     def move(self, traffic_lights, should_stop=False):
-        """Move the vehicle along its path, respecting traffic signals"""
+        """Move the vehicle along its path, respecting traffic signals and other vehicles"""
         if should_stop:
             return
 
         if not self.path:
             return  # No path to follow
 
+        # Get current target waypoint
         target = self.path[0]
         dx = target[0] - self.position[0]
         dz = target[2] - self.position[2]
         distance = (dx**2 + dz**2) ** 0.5
 
-        # If the vehicle reaches the target, move to the next waypoint
+        # If vehicle reaches target, move to next waypoint
         if distance < self.speed:
             self.position = list(target)
             self.path.pop(0)
         else:
-            # Move towards the target
+            # Calculate movement
             move_x = (dx / distance) * self.speed
             move_z = (dz / distance) * self.speed
-            self.position[0] += move_x
-            self.position[2] += move_z
+
+            # Update position if no collision detected
+            if not hasattr(self, "collision_ahead") or not self.collision_ahead:
+                self.position[0] += move_x
+                self.position[2] += move_z
 
     def draw(self):
         """Render the vehicle in the OpenGL scene"""
