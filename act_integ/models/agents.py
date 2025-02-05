@@ -36,7 +36,7 @@ class VehicleAgent(ap.Agent):
     def load_vehicle_model(self):
         """Load 3D model for the vehicle."""
         model_path = os.path.join(
-            os.path.dirname(__file__), "..", "assets", "models", "untitled.obj"
+            os.path.dirname(__file__), "..", "assets", "models", "Car.obj"
         )
         self.model = OBJ(model_path, swapyz=True)
         self.model.generate()
@@ -139,7 +139,9 @@ class VehicleAgent(ap.Agent):
             return False
 
         # Get vehicle's current lane and direction info
-        my_lane_pos = self.position[2] if self.direction in ["E", "W"] else self.position[0]
+        my_lane_pos = (
+            self.position[2] if self.direction in ["E", "W"] else self.position[0]
+        )
 
         for other in other_vehicles:
             if other is self:
@@ -150,7 +152,9 @@ class VehicleAgent(ap.Agent):
                 continue
 
             # Get other vehicle's lane position
-            other_lane_pos = other.position[2] if self.direction in ["E", "W"] else other.position[0]
+            other_lane_pos = (
+                other.position[2] if self.direction in ["E", "W"] else other.position[0]
+            )
 
             # Check if vehicles are in the same lane (within tolerance)
             lane_tolerance = 5.0
@@ -159,20 +163,28 @@ class VehicleAgent(ap.Agent):
 
             # Check relative positions based on direction
             if self.direction == "E":
-                if (other.position[0] > self.position[0] and 
-                    other.position[0] - self.position[0] < self.safe_distance):
+                if (
+                    other.position[0] > self.position[0]
+                    and other.position[0] - self.position[0] < self.safe_distance
+                ):
                     return True
             elif self.direction == "W":
-                if (other.position[0] < self.position[0] and 
-                    self.position[0] - other.position[0] < self.safe_distance):
+                if (
+                    other.position[0] < self.position[0]
+                    and self.position[0] - other.position[0] < self.safe_distance
+                ):
                     return True
             elif self.direction == "N":
-                if (other.position[2] > self.position[2] and 
-                    other.position[2] - self.position[2] < self.safe_distance):
+                if (
+                    other.position[2] > self.position[2]
+                    and other.position[2] - self.position[2] < self.safe_distance
+                ):
                     return True
             elif self.direction == "S":
-                if (other.position[2] < self.position[2] and 
-                    self.position[2] - other.position[2] < self.safe_distance):
+                if (
+                    other.position[2] < self.position[2]
+                    and self.position[2] - other.position[2] < self.safe_distance
+                ):
                     return True
 
         return False
