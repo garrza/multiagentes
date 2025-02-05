@@ -131,11 +131,9 @@ class VehicleAgent(ap.Agent):
         self.waiting_at_light = False
         return False
 
-    def move(self, traffic_lights):
-        """Move the vehicle along its path, respecting traffic lights"""
-
-        # Stop before the intersection if the light is red
-        if not self.crossing_intersection and self.check_traffic_light(traffic_lights):
+    def move(self, traffic_lights, should_stop=False):
+        """Move the vehicle along its path, respecting traffic signals"""
+        if should_stop:
             return
 
         if not self.path:
@@ -146,20 +144,12 @@ class VehicleAgent(ap.Agent):
         dz = target[2] - self.position[2]
         distance = (dx**2 + dz**2) ** 0.5
 
-        # Detect when car enters the intersection
-        if len(self.path) == 2 and not self.crossing_intersection:
-            self.crossing_intersection = True
-
         # If the vehicle reaches the target, move to the next waypoint
         if distance < self.speed:
             self.position = list(target)
             self.path.pop(0)
-
-            # If exiting the intersection, reset flag
-            if len(self.path) == 1:
-                self.crossing_intersection = False
-
         else:
+            # Move towards the target
             move_x = (dx / distance) * self.speed
             move_z = (dz / distance) * self.speed
             self.position[0] += move_x
