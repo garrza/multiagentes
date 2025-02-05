@@ -5,12 +5,14 @@ import agentpy as ap
 from models.agents import VehicleAgent
 from objects.traffic_light import TrafficLight
 from objects.stop_block import StopBlock
+from models.pedestrian import PedestrianAgent
 
 
 class TrafficModel(ap.Model):
     def __init__(self, traffic_lights, **kwargs):
         super().__init__(**kwargs)
         self.vehicles = ap.AgentList(self, 0, VehicleAgent)
+        self.pedestrians = ap.AgentList(self, 0, PedestrianAgent)
         self.traffic_lights = []
         self.stop_blocks = []  # New list for stop blocks
         self.start_time = time.time()
@@ -55,64 +57,58 @@ class TrafficModel(ap.Model):
         ew_width = 5  # Width of EW blocks
         ew_depth = 20  # Depth reduced to cover only one lane
 
-        # Create stop blocks for each intersection
+        # Create stop blocks for each intersection - positions adjusted to be before crosswalks
         stop_block_configs = [
             # Left intersection
             {
-                "pos": (-60, -25),  # Northbound - positioned on right lane
+                "pos": (-60, -30),  # Northbound - moved back 5 units
                 "width": ns_width,
                 "depth": ns_depth,
                 "dir": "NS",
-            },  # Northbound
+            },
             {
-                "pos": (-80, 25),  # Southbound - positioned on left lane
+                "pos": (-80, 30),  # Southbound - moved back 5 units
                 "width": ns_width,
                 "depth": ns_depth,
                 "dir": "NS",
-            },  # Southbound
+            },
             {
-                "pos": (
-                    -95,
-                    10,
-                ),  # Westbound - positioned on top lane (changed from bottom)
+                "pos": (-100, 10),  # Westbound - moved back 5 units
                 "width": ew_width,
                 "depth": ew_depth,
                 "dir": "EW",
-            },  # Westbound
+            },
             {
-                "pos": (
-                    -45,
-                    -10,
-                ),  # Eastbound - positioned on bottom lane (changed from top)
+                "pos": (-40, -10),  # Eastbound - moved back 5 units
                 "width": ew_width,
                 "depth": ew_depth,
                 "dir": "EW",
-            },  # Eastbound
+            },
             # Right intersection
             {
-                "pos": (80, -25),  # Northbound - positioned on right lane
+                "pos": (80, -30),  # Northbound - moved back 5 units
                 "width": ns_width,
                 "depth": ns_depth,
                 "dir": "NS",
-            },  # Northbound
+            },
             {
-                "pos": (60, 25),  # Southbound - positioned on left lane
+                "pos": (60, 30),  # Southbound - moved back 5 units
                 "width": ns_width,
                 "depth": ns_depth,
                 "dir": "NS",
-            },  # Southbound
+            },
             {
-                "pos": (95, -10),  # Eastbound - positioned on bottom lane
+                "pos": (100, -10),  # Eastbound - moved back 5 units
                 "width": ew_width,
                 "depth": ew_depth,
                 "dir": "EW",
-            },  # Eastbound
+            },
             {
-                "pos": (45, 10),  # Westbound - positioned on top lane
+                "pos": (40, 10),  # Westbound - moved back 5 units
                 "width": ew_width,
                 "depth": ew_depth,
                 "dir": "EW",
-            },  # Westbound
+            },
         ]
 
         for config in stop_block_configs:
@@ -148,24 +144,39 @@ class TrafficModel(ap.Model):
             new_vehicle = VehicleAgent(self)
             self.vehicles.append(new_vehicle)
 
-        # Check for vehicle collisions and update positions
-        for vehicle in self.vehicles:
-            # Check for collisions with other vehicles
-            vehicle.collision_ahead = vehicle.is_collision_ahead(self.vehicles)
+        # Spawn new pedestrians periodically
+        if random.random() < 0.01:  # Lower spawn rate than vehicles
+            new_pedestrian = PedestrianAgent(self)
+            self.pedestrians.append(new_pedestrian)
 
-            # Check for stop block collisions
+        # Update pedestrians first
+        for pedestrian in self.pedestrians:
+            pedestrian.move(self.traffic_lights, self.vehicles)
+
+        # Then update vehicles with pedestrian awareness
+        for vehicle in self.vehicles:
+            # Check for nearby pedestrians
             should_stop = False
+            for pedestrian in self.pedestrians:
+                if self._is_pedestrian_in_vehicle_path(vehicle, pedestrian):
+                    should_stop = True
+                    break
+
+            # Regular vehicle updates
+            vehicle.collision_ahead = vehicle.is_collision_ahead(self.vehicles)
+            should_stop = should_stop or vehicle.collision_ahead
+
             for block in self.stop_blocks:
                 if block.active and block.is_colliding(vehicle.position):
                     should_stop = True
                     break
 
-            # Stop if there's either a collision ahead or an active stop block
-            should_stop = should_stop or vehicle.collision_ahead
             vehicle.move(self.traffic_lights, should_stop)
 
         # Remove vehicles that have reached their destination
         self.vehicles = ap.AgentList(self, [v for v in self.vehicles if v.path])
+        # Remove pedestrians that reached destination
+        self.pedestrians = ap.AgentList(self, [p for p in self.pedestrians if p.path])
 
     def draw(self):
         """Render all components in the scene."""
@@ -177,3 +188,39 @@ class TrafficModel(ap.Model):
 
         for block in self.stop_blocks:
             block.draw()
+
+        for pedestrian in self.pedestrians:
+            pedestrian.draw()
+
+    def _is_pedestrian_in_vehicle_path(self, vehicle, pedestrian, safe_distance=20.0):
+        """Check if pedestrian is in vehicle's path and needs to be avoided"""
+        # Get vehicle's projected path
+        if not vehicle.path:
+            return False
+
+        next_point = vehicle.path[0]
+
+        # Calculate if pedestrian is between vehicle and its next point
+        v_pos = vehicle.position
+        p_pos = pedestrian.position
+
+        # Simple rectangular check based on vehicle direction
+        if vehicle.direction in ["N", "S"]:
+            # Check if pedestrian is in same vertical lane
+            if abs(p_pos[0] - v_pos[0]) > 5.0:
+                return False
+
+            # Check if pedestrian is between vehicle and its target
+            if vehicle.direction == "N":
+                return v_pos[2] < p_pos[2] < v_pos[2] + safe_distance
+            else:
+                return v_pos[2] - safe_distance < p_pos[2] < v_pos[2]
+        else:
+            # Similar check for east-west movement
+            if abs(p_pos[2] - v_pos[2]) > 5.0:
+                return False
+
+            if vehicle.direction == "E":
+                return v_pos[0] < p_pos[0] < v_pos[0] + safe_distance
+            else:
+                return v_pos[0] - safe_distance < p_pos[0] < v_pos[0]
