@@ -27,6 +27,7 @@ class VehicleAgent(ap.Agent):
         self.assigned_light = None  # Track specific traffic light
         self.length = 15.0  # Vehicle length for collision detection
         self.safe_distance = 30.0  # Minimum safe distance between vehicles
+        self.width = 8.0  # Added width parameter
 
         # Load vehicle model
         self.load_vehicle_model()
@@ -152,30 +153,22 @@ class VehicleAgent(ap.Agent):
         # Define collision detection parameters
         collision_box = {
             "length": self.length,  # Vehicle length
-            "width": 8.0,  # Vehicle width
-            "safe_distance": self.safe_distance,  # Safe following distance
-            "lane_tolerance": 5.0,  # Tolerance for lane position
+            "width": self.width,  # Vehicle width
+            "lane_tolerance": 0.5,  # Allow some tolerance for lane changes
         }
 
-        # Get vehicle's current position and direction info
-        my_pos = self.position
-
-        # Calculate detection box based on direction
-        detection_box = self._get_detection_box(collision_box)
-
         for other in other_vehicles:
-            if other is self:
-                continue
-
-            # Skip vehicles not in same direction
-            if other.direction != self.direction:
+            if other is self:  # Skip self
                 continue
 
             # Check if other vehicle is in detection box
             if self._vehicle_in_detection_box(
-                other, detection_box, collision_box["lane_tolerance"]
+                other, collision_box, collision_box["lane_tolerance"]
             ):
-                return True
+                # Adjust the logic to allow passing through
+                if abs(self.position[0] - other.position[0]) < collision_box["width"]:
+                    return False  # Allow passing through
+                return True  # Collision detected
 
         return False
 
@@ -218,25 +211,25 @@ class VehicleAgent(ap.Agent):
     def _vehicle_in_detection_box(
         self, other_vehicle, detection_box, lane_tolerance
     ) -> bool:
-        """Check if other vehicle is within the detection box"""
-        other_x, _, other_z = other_vehicle.position
+        """
+        Check if another vehicle is within the detection box.
+        """
+        # Calculate the detection box boundaries
+        detection_box["x_min"] = self.position[0] - (detection_box["length"] / 2)
+        detection_box["x_max"] = self.position[0] + (detection_box["length"] / 2)
+        detection_box["y_min"] = self.position[1] - (detection_box["width"] / 2)
+        detection_box["y_max"] = self.position[1] + (detection_box["width"] / 2)
 
-        # Basic box collision check
-        in_box = (
+        # Check if the other vehicle is within the detection box
+        other_x = other_vehicle.position[0]
+        other_y = other_vehicle.position[1]
+
+        return (
             other_x >= detection_box["x_min"]
             and other_x <= detection_box["x_max"]
-            and other_z >= detection_box["z_min"]
-            and other_z <= detection_box["z_max"]
+            and other_y >= detection_box["y_min"]
+            and other_y <= detection_box["y_max"]
         )
-
-        if not in_box:
-            return False
-
-        # Additional lane check
-        if self.direction in ["E", "W"]:
-            return abs(other_z - self.position[2]) < lane_tolerance
-        else:  # N, S
-            return abs(other_x - self.position[0]) < lane_tolerance
 
     def get_distance_to_vehicle(self, other_vehicle) -> float:
         """Calculate distance to another vehicle"""
